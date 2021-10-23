@@ -31,7 +31,7 @@ namespace NewsLy.Api
 
             services.AddScoped<IMailingService, MailingService>();
 
-            services.AddScoped<IContactRequestRepository, ContactRequestRepository>();
+            services.AddScoped<IContactRequestRepository, ContactRequestRepositoryContrib>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
