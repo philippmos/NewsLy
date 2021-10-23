@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: newsly-srv
+  name: newsly-np-srv
 spec:
   type: NodePort
   selector:
