@@ -8,6 +8,7 @@ using NewsLy.Api.Settings;
 using NewsLy.Api.Services;
 using NewsLy.Api.Data;
 using Microsoft.EntityFrameworkCore;
+using NewsLy.Api.Repositories;
 
 namespace NewsLy.Api
 {
@@ -29,6 +30,8 @@ namespace NewsLy.Api
             services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
 
             services.AddScoped<IMailingService, MailingService>();
+
+            services.AddScoped<IContactRequestRepository, ContactRequestRepository>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NewsLy.Api.Models;
+using NewsLy.Api.Repositories;
 using NewsLy.Api.Services;
 
 namespace NewsLy.Api.Controllers
@@ -15,19 +16,23 @@ namespace NewsLy.Api.Controllers
 
         private readonly ILogger<MailingsController> _logger;
         private readonly IMailingService _mailingService;
+        private readonly IContactRequestRepository _contactRequestRepository;
 
         public MailingsController(
             ILogger<MailingsController> logger,
-            IMailingService mailingService)
+            IMailingService mailingService,
+            IContactRequestRepository contactRequestRepository
+        )
         {
             _logger = logger;
             _mailingService = mailingService;
+            _contactRequestRepository = contactRequestRepository;
         }
 
         [HttpGet]
-        public KeyValuePair<string, string> Get()
+        public List<ContactRequest> Get()
         {
-            return new KeyValuePair<string, string> ( "status", "success" );
+            return _contactRequestRepository.GetAll();
         }
 
         [HttpPost("contact")]
@@ -36,6 +41,9 @@ namespace NewsLy.Api.Controllers
             try
             {
                 await _mailingService.SendMailAsync(mailRequest);
+                
+                _contactRequestRepository.Add(mailRequest);
+
                 return Ok();
             }
             catch (Exception ex)
