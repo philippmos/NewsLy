@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: newsly-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: newsly
+  template:
+    metadata:
+      labels:
+        app: newsly
+    spec:
+      containers:
+        - name: newsly
+          image: philippmoser/newsly:latest
