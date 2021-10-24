@@ -70,6 +70,7 @@ namespace NewsLy.Api
             services.AddScoped<IContactRequestRepository, DapperContribRepo.ContactRequestRepository>();
             services.AddScoped<IRecipientRepository, DapperRepo.RecipientRepository>();
             services.AddScoped<IMailingListRepository, DapperRepo.MailingListRepository>();
+            services.AddScoped<ITrackingUrlRepository, DapperRepo.TrackingUrlRepository>();
         }
     }
 }

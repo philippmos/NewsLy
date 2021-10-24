@@ -13,7 +13,6 @@ namespace NewsLy.Api.Controllers
     [Route("api/[controller]")]
     public class MailingsController : ControllerBase
     {
-
         private readonly ILogger<MailingsController> _logger;
         private readonly IMailingService _mailingService;
         private readonly IContactRequestRepository _contactRequestRepository;

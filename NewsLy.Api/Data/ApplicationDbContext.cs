@@ -14,5 +14,8 @@ namespace NewsLy.Api.Data
         public DbSet<ContactRequest> ContactRequests { get; set; }
         public DbSet<Recipient> Recipients { get; set; }
         public DbSet<MailingList> MailingLists { get; set; }
+
+
+        public DbSet<TrackingUrl> TrackingUrls { get; set; }
     }
 }
