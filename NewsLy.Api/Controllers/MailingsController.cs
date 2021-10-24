@@ -35,12 +35,17 @@ namespace NewsLy.Api.Controllers
             return _contactRequestRepository.GetAll();
         }
 
-        [HttpPost("contact")]
+        [HttpPost]
         public async Task<IActionResult> SendMailAsync([FromForm]ContactRequest mailRequest)
         {
+            if (string.IsNullOrEmpty(mailRequest.ToEmail) && !mailRequest.ToMailingListId.HasValue )
+            {
+                return BadRequest("ToEmail or ToMailingListId Parameter is required.");
+            }
+
             try
             {
-                await _mailingService.SendMailAsync(mailRequest);
+                await _mailingService.SendMailingAsync(mailRequest);
                 
                 _contactRequestRepository.Add(mailRequest);
 

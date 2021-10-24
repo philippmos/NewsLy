@@ -25,7 +25,7 @@ namespace NewsLy.Api.Repositories.Dapper
 
         public Recipient Find(int id) 
         {
-            var sqlQuery = $"SELECT TOP(1) FROM { _repoTableName } WHERE Id = @Id";
+            var sqlQuery = $"SELECT * FROM { _repoTableName } WHERE Id = @Id";
 
             return _dbconnection.Query<Recipient>(sqlQuery, new { @Id = id }).Single();
         }

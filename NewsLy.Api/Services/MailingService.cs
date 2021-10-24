@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq;
 
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
@@ -13,6 +14,7 @@ using MimeKit;
 
 using NewsLy.Api.Models;
 using NewsLy.Api.Settings;
+using NewsLy.Api.Repositories.Interfaces;
 
 namespace NewsLy.Api.Services
 {
@@ -20,22 +22,30 @@ namespace NewsLy.Api.Services
     {
         private readonly MailSettings _mailSettings;
         private readonly ILogger<MailingService> _logger;
+        private readonly IMailingListRepository _mailingListRepository;
+        private readonly IRecipientRepository _recipientRepository;
 
         public MailingService(
             ILogger<MailingService> logger,
-            IOptions<MailSettings> mailSettings)
+            IOptions<MailSettings> mailSettings,
+            IMailingListRepository mailingListRepository,
+            IRecipientRepository recipientRepository
+        )
         {
             _logger = logger;
             _mailSettings = mailSettings.Value;
+            _mailingListRepository = mailingListRepository;
+            _recipientRepository = recipientRepository;
         }
 
-        public async Task SendMailAsync(ContactRequest mailRequest)
+        public async Task SendMailingAsync(ContactRequest mailRequest)
         {
             var mailSubject = "New Contact Request";
 
             var email = new MimeMessage();
             email.Sender = MailboxAddress.Parse(_mailSettings.Mail);
-            email.To.Add(MailboxAddress.Parse(mailRequest.ToEmail));
+            email.Bcc.AddRange(GetMailingRecipients(mailRequest));
+
             email.Subject = mailSubject;
 
             var bodyBuilder = new BodyBuilder();
@@ -53,6 +63,27 @@ namespace NewsLy.Api.Services
             await SendMailAsync(email);
         }
 
+
+        private IEnumerable<InternetAddress> GetMailingRecipients(ContactRequest mailRequest)
+        {
+            var internetAddresses = new List<InternetAddress>();
+
+            if (!string.IsNullOrEmpty(mailRequest.ToEmail))
+            {
+                internetAddresses.Add(MailboxAddress.Parse(mailRequest.ToEmail));
+            }
+
+            if (mailRequest.ToMailingListId.HasValue &&
+                _mailingListRepository.Find((int) mailRequest.ToMailingListId) != null
+            )
+            {
+                var recipients = _recipientRepository.GetAllFromMailingList((int) mailRequest.ToMailingListId);
+
+                internetAddresses.AddRange(recipients.Select(x => MailboxAddress.Parse(x.Email)));
+            }
+
+            return internetAddresses;
+        }
 
         private async Task SendMailAsync(MimeMessage mimeMessage)
         {

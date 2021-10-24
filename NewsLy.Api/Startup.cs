@@ -11,6 +11,7 @@ using NewsLy.Api.Services;
 using NewsLy.Api.Data;
 
 using DapperRepo = NewsLy.Api.Repositories.Dapper;
+using DapperContribRepo = NewsLy.Api.Repositories.DapperContrib;
 
 namespace NewsLy.Api
 {
@@ -31,11 +32,7 @@ namespace NewsLy.Api
 
             services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
 
-            services.AddScoped<IMailingService, MailingService>();
-
-            services.AddScoped<IContactRequestRepository, DapperRepo.ContactRequestRepository>();
-            services.AddScoped<IRecipientRepository, DapperRepo.RecipientRepository>();
-            services.AddScoped<IMailingListRepository, DapperRepo.MailingListRepository>();
+            AddDependencyInjectionMappings(services);
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -64,6 +61,15 @@ namespace NewsLy.Api
             {
                 endpoints.MapControllers();
             });
+        }
+
+        private void AddDependencyInjectionMappings(IServiceCollection services)
+        {
+            services.AddScoped<IMailingService, MailingService>();
+
+            services.AddScoped<IContactRequestRepository, DapperContribRepo.ContactRequestRepository>();
+            services.AddScoped<IRecipientRepository, DapperRepo.RecipientRepository>();
+            services.AddScoped<IMailingListRepository, DapperRepo.MailingListRepository>();
         }
     }
 }
