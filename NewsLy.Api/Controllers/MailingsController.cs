@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NewsLy.Api.Models;
-using NewsLy.Api.Repositories;
+using NewsLy.Api.Repositories.Interfaces;
 using NewsLy.Api.Services;
 
 namespace NewsLy.Api.Controllers

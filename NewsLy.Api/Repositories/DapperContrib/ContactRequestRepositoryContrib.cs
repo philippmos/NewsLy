@@ -7,14 +7,15 @@ using Dapper.Contrib.Extensions;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using NewsLy.Api.Models;
+using NewsLy.Api.Repositories.Interfaces;
 
-namespace NewsLy.Api.Repositories
+namespace NewsLy.Api.Repositories.DapperContrib
 {
-    public class ContactRequestRepositoryContrib : IContactRequestRepository
+    public class ContactRequestRepository : IContactRequestRepository
     {
         private IDbConnection _dbconnection;
 
-        public ContactRequestRepositoryContrib(IConfiguration configuration)
+        public ContactRequestRepository(IConfiguration configuration)
         {
             _dbconnection = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
         }

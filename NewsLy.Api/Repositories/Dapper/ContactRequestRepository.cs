@@ -6,8 +6,9 @@ using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using NewsLy.Api.Models;
+using NewsLy.Api.Repositories.Interfaces;
 
-namespace NewsLy.Api.Repositories
+namespace NewsLy.Api.Repositories.Dapper
 {
     public class ContactRequestRepository : IContactRequestRepository
     {

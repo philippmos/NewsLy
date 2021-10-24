@@ -4,11 +4,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Microsoft.EntityFrameworkCore;
+using NewsLy.Api.Repositories.Interfaces;
 using NewsLy.Api.Settings;
 using NewsLy.Api.Services;
 using NewsLy.Api.Data;
-using Microsoft.EntityFrameworkCore;
-using NewsLy.Api.Repositories;
+
+using DapperRepo = NewsLy.Api.Repositories.Dapper;
 
 namespace NewsLy.Api
 {
@@ -31,7 +33,7 @@ namespace NewsLy.Api
 
             services.AddScoped<IMailingService, MailingService>();
 
-            services.AddScoped<IContactRequestRepository, ContactRequestRepositoryContrib>();
+            services.AddScoped<IContactRequestRepository, DapperRepo.ContactRequestRepository>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
