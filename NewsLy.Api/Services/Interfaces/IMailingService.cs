@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using NewsLy.Api.Models;
 
-namespace NewsLy.Api.Services
+namespace NewsLy.Api.Services.Interfaces
 {
     public interface IMailingService
     {
