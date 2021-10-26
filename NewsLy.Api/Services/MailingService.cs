@@ -44,7 +44,8 @@ namespace NewsLy.Api.Services
             var mailSubject = "New Contact Request";
 
             var email = new MimeMessage();
-            email.Sender = MailboxAddress.Parse(_mailSettings.Mail);
+            email.Importance = MessageImportance.Normal;
+            email.From.Add(new MailboxAddress(_mailSettings.DisplayName, _mailSettings.SenderMail));
             email.Bcc.AddRange(GetMailingRecipients(mailRequest));
 
             email.Subject = mailSubject;
@@ -90,7 +91,7 @@ namespace NewsLy.Api.Services
         {
             using var smtp = new SmtpClient();
             smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
-            smtp.Authenticate(_mailSettings.Mail, _mailSettings.Password);
+            smtp.Authenticate(_mailSettings.Username, _mailSettings.Password);
 
             await smtp.SendAsync(mimeMessage);
 
@@ -128,7 +129,7 @@ namespace NewsLy.Api.Services
                         Tuple.Create("Email", mailRequest.ToEmail),
                         Tuple.Create("RequestIp", mailRequest.RequestIp),
                         Tuple.Create("Message", mailRequest.Message),
-                        Tuple.Create("ApplicationUrl", "http://localhost")
+                        Tuple.Create("ApplicationUrl", "http://localhost/")
                     }
                 );
             }
