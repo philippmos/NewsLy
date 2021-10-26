@@ -15,6 +15,7 @@ using MimeKit;
 using NewsLy.Api.Models;
 using NewsLy.Api.Settings;
 using NewsLy.Api.Repositories.Interfaces;
+using NewsLy.Api.Services.Interfaces;
 
 namespace NewsLy.Api.Services
 {
