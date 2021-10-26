@@ -11,4 +11,8 @@ FROM mcr.microsoft.com/dotnet/aspnet:5.0
 WORKDIR /app
 
 COPY --from=build-env /app/out .
+
+EXPOSE 5000/tcp
+EXPOSE 5001/tcp
+
 ENTRYPOINT [ "dotnet", "NewsLy.Api.dll" ]
