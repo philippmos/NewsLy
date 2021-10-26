@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using NewsLy.Api.Models;
 
-namespace NewsLy.Api.Data
+namespace NewsLy.Api.Infrastructure.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {

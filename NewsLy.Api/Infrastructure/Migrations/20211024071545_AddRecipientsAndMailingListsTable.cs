@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace NewsLy.Api.Migrations
+namespace NewsLy.Api.Infrastructure.Migrations
 {
     public partial class AddRecipientsAndMailingListsTable : Migration
     {

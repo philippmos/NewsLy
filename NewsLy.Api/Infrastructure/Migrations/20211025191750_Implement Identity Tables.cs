@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace NewsLy.Api.Migrations
+namespace NewsLy.Api.Infrastructure.Migrations
 {
     public partial class ImplementIdentityTables : Migration
     {
