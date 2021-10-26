@@ -4,7 +4,7 @@
 
 #### Build the Docker Image locally
 ```
-docker build -t <docker_hub_id>/<image_name> .
+docker build -t <docker_hub_id>/<image_name> . --no-cache
 ```
 
 #### Run the built Docker Image as an Container

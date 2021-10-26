@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NewsLy.Api.Dtos;
 using NewsLy.Api.Services.Interfaces;
-using NewsLy.Api.Settings;
 
 namespace NewsLy.Api.Controllers
 {
