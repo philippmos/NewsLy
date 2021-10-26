@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using NewsLy.Api.Models;
 
-namespace NewsLy.Api.Repositories.Interfaces
+namespace NewsLy.Api.Infrastructure.Repositories.Interfaces
 {
     public interface IMailingListRepository
     {
