@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace NewsLy.Api.Infrastructure.Migrations
+namespace NewsLy.Api.Migrations
 {
     public partial class AddNewColumnToMailRequestTable : Migration
     {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using NewsLy.Api.Infrastructure.Repositories.Interfaces;
+using NewsLy.Api.Repositories.Interfaces;
 
 namespace NewsLy.Api.Controllers
 {

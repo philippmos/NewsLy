@@ -7,13 +7,13 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using NewsLy.Api.Infrastructure.Repositories.Interfaces;
+using NewsLy.Api.Repositories.Interfaces;
 using NewsLy.Api.Settings;
 using NewsLy.Api.Services;
-using NewsLy.Api.Infrastructure.Data;
+using NewsLy.Api.Data;
 
-using DapperRepo = NewsLy.Api.Infrastructure.Repositories.Dapper;
-using DapperContribRepo = NewsLy.Api.Infrastructure.Repositories.DapperContrib;
+using DapperRepo = NewsLy.Api.Repositories.Dapper;
+using DapperContribRepo = NewsLy.Api.Repositories.DapperContrib;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Identity;
 using NewsLy.Api.Services.Interfaces;

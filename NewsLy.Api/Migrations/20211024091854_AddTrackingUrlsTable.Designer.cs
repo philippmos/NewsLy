@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using NewsLy.Api.Infrastructure.Data;
+using NewsLy.Api.Data;
 
-namespace NewsLy.Api.Infrastructure.Migrations
+namespace NewsLy.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20211024091854_AddTrackingUrlsTable")]

@@ -6,9 +6,9 @@ using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using NewsLy.Api.Models;
-using NewsLy.Api.Infrastructure.Repositories.Interfaces;
+using NewsLy.Api.Repositories.Interfaces;
 
-namespace NewsLy.Api.Infrastructure.Repositories.Dapper
+namespace NewsLy.Api.Repositories.Dapper
 {
     public class MailingListRepository : IMailingListRepository
     {
