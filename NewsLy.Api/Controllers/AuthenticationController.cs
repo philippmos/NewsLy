@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using NewsLy.Api.Dtos;
+using NewsLy.Api.Dtos.User;
 using NewsLy.Api.Services.Interfaces;
 
 namespace NewsLy.Api.Controllers

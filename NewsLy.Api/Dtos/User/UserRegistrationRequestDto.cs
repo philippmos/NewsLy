@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace NewsLy.Api.Dtos
+namespace NewsLy.Api.Dtos.User
 {
     public class UserRegistrationRequestDto
     {

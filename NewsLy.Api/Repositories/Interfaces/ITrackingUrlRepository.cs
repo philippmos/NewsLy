@@ -7,5 +7,6 @@ namespace NewsLy.Api.Repositories.Interfaces
     {
         TrackingUrl FindByTrackingId(string trackingId);
         List<TrackingUrl> GetAll();
+        List<TrackingUrl> GetAllActive();
     }
 }

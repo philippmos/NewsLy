@@ -36,5 +36,13 @@ namespace NewsLy.Api.Repositories.Dapper
 
             return _dbconnection.Query<TrackingUrl>(sqlQuery).ToList();
         }
+
+        public List<TrackingUrl> GetAllActive()
+        {
+            return _dbconnection.Query<TrackingUrl>(
+                $"SELECT * FROM { _repoTableName } WHERE IsActive = @IsActive",
+                new { @IsActive = true }
+            ).ToList();
+        }
     }
 }

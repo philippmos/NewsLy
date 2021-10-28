@@ -17,6 +17,7 @@ using DapperContribRepo = NewsLy.Api.Repositories.DapperContrib;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Identity;
 using NewsLy.Api.Services.Interfaces;
+using System;
 
 namespace NewsLy.Api
 {
@@ -43,6 +44,9 @@ namespace NewsLy.Api
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "NewsLy.Api", Version = "v1" });
             });
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 
             services.AddAuthentication(options => {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

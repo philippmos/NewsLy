@@ -1,4 +1,4 @@
-namespace NewsLy.Api.Dtos
+namespace NewsLy.Api.Dtos.User
 {
     public class UserRegistrationResponseDto : AuthenticationResultBaseDto
     {
