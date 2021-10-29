@@ -9,5 +9,6 @@ namespace NewsLy.Api.Repositories.Interfaces
         List<TrackingUrl> GetAll();
         List<TrackingUrl> GetAllActive();
         TrackingUrl Add(TrackingUrl trackingUrl);
+        TrackingUrl Update(TrackingUrl trackingUrl);
     }
 }

@@ -55,6 +55,10 @@ namespace NewsLy.Api.Controllers
                 return;
             }
 
+            trackingUrl.AccessCount++;
+
+            _trackingUrlRepository.Update(trackingUrl);
+
             Response.Redirect(trackingUrl.TargetUrl);
 
             return;
