@@ -44,5 +44,18 @@ namespace NewsLy.Api.Repositories.Dapper
                 new { @IsActive = true }
             ).ToList();
         }
+
+        public TrackingUrl Add(TrackingUrl trackingUrl)
+        {
+            var sqlQuery = new StringBuilder();
+            sqlQuery.Append($"INSERT INTO { _repoTableName }");
+            sqlQuery.Append(" (TrackingId, TargetUrl, AccessCount, IsActive)");
+            sqlQuery.Append(" VALUES (@TrackingId, @TargetUrl, @AccessCount, @IsActive);");
+            sqlQuery.Append(" SELECT CAST(SCOPE_IDENTITY() as int);");
+
+            trackingUrl.Id = _dbconnection.Query<int>(sqlQuery.ToString(), trackingUrl).Single();
+
+            return trackingUrl;
+        }
     }
 }

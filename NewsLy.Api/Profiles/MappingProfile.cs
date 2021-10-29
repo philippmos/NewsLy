@@ -9,6 +9,7 @@ namespace NewsLy.Api.Profiles
         public MappingProfile()
         {
             CreateMap<TrackingUrl, TrackingUrlDto>();
+            CreateMap<TrackingUrlCreateDto, TrackingUrl>();
         }
     }
 }
