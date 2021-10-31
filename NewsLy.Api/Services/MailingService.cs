@@ -7,6 +7,7 @@ using System.Linq;
 
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 
 using MailKit.Net.Smtp;
 using MailKit.Security;
@@ -21,22 +22,28 @@ namespace NewsLy.Api.Services
 {
     public class MailingService : IMailingService
     {
-        private readonly MailSettings _mailSettings;
         private readonly ILogger<MailingService> _logger;
+        private readonly MailSettings _mailSettings;
+        private readonly IConfiguration _configuration;
         private readonly IMailingListRepository _mailingListRepository;
         private readonly IRecipientRepository _recipientRepository;
+        private readonly ITrackingService _trackingService;
 
         public MailingService(
             ILogger<MailingService> logger,
             IOptions<MailSettings> mailSettings,
+            IConfiguration configuration,
             IMailingListRepository mailingListRepository,
-            IRecipientRepository recipientRepository
+            IRecipientRepository recipientRepository,
+            ITrackingService trackingService
         )
         {
             _logger = logger;
             _mailSettings = mailSettings.Value;
+            _configuration = configuration;
             _mailingListRepository = mailingListRepository;
             _recipientRepository = recipientRepository;
+            _trackingService = trackingService;
         }
 
         public async Task SendMailingAsync(ContactRequest mailRequest)
@@ -119,7 +126,7 @@ namespace NewsLy.Api.Services
 
             if (!string.IsNullOrEmpty(mailTemplate))
             {
-                return ReplaceVariables(
+                string mailContent = ReplaceVariables(
                     mailTemplate,
                     new[]
                     {
@@ -129,9 +136,11 @@ namespace NewsLy.Api.Services
                         Tuple.Create("Email", mailRequest.ToEmail),
                         Tuple.Create("RequestIp", mailRequest.RequestIp),
                         Tuple.Create("Message", mailRequest.Message),
-                        Tuple.Create("ApplicationUrl", "http://localhost/")
+                        Tuple.Create("ApplicationUrl", _configuration["ApplicationDomain"])
                     }
                 );
+
+                return _trackingService.DetectCreateAndReplaceTrackings(mailContent);
             }
 
             return "";
