@@ -25,18 +25,21 @@ namespace NewsLy.Api.Services
         private readonly ILogger<MailingService> _logger;
         private readonly IMailingListRepository _mailingListRepository;
         private readonly IRecipientRepository _recipientRepository;
+        private readonly ITrackingService _trackingService;
 
         public MailingService(
             ILogger<MailingService> logger,
             IOptions<MailSettings> mailSettings,
             IMailingListRepository mailingListRepository,
-            IRecipientRepository recipientRepository
+            IRecipientRepository recipientRepository,
+            ITrackingService trackingService
         )
         {
             _logger = logger;
             _mailSettings = mailSettings.Value;
             _mailingListRepository = mailingListRepository;
             _recipientRepository = recipientRepository;
+            _trackingService = trackingService;
         }
 
         public async Task SendMailingAsync(ContactRequest mailRequest)
@@ -119,7 +122,7 @@ namespace NewsLy.Api.Services
 
             if (!string.IsNullOrEmpty(mailTemplate))
             {
-                return ReplaceVariables(
+                string mailContent = ReplaceVariables(
                     mailTemplate,
                     new[]
                     {
@@ -132,6 +135,8 @@ namespace NewsLy.Api.Services
                         Tuple.Create("ApplicationUrl", "http://localhost/")
                     }
                 );
+
+                return _trackingService.DetectCreateAndReplaceTrackings(mailContent);
             }
 
             return "";
