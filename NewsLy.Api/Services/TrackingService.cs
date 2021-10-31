@@ -1,10 +1,15 @@
-using NewsLy.Api.Services.Interfaces;
-using System.Linq;
 using System;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+using System.Linq;
+using System.Text;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+
+using NewsLy.Api.Services.Interfaces;
+using NewsLy.Api.Models;
+using NewsLy.Api.Repositories.Interfaces;
 
 namespace NewsLy.Api.Services
 {
@@ -12,14 +17,17 @@ namespace NewsLy.Api.Services
     {
         private readonly ILogger<TrackingService> _logger;
         private readonly IConfiguration _configuration;
+        private readonly ITrackingUrlRepository _trackingUrlRepository;
 
         public TrackingService(
             ILogger<TrackingService> logger,
-            IConfiguration configuration
+            IConfiguration configuration,
+            ITrackingUrlRepository trackingUrlRepository
         )
         {
             _logger = logger;
             _configuration = configuration;
+            _trackingUrlRepository = trackingUrlRepository;
         }
 
         public string GenerateTrackingId()
@@ -35,9 +43,11 @@ namespace NewsLy.Api.Services
 
         public string DetectCreateAndReplaceTrackings(string inputString)
         {
-            var foundLinks = FindLinkMatchesInString(inputString);
+            var newTrackingLinks = CreateTrackingLinks(
+                FindLinkMatchesInString(inputString)
+            );
 
-            return inputString;
+            return ReplaceAllTrackingLinks(inputString, newTrackingLinks);
         }
 
         private IEnumerable<string> FindLinkMatchesInString(string inputString)
@@ -57,6 +67,43 @@ namespace NewsLy.Api.Services
             }
 
             return foundLinksList;
+        }
+
+
+        private IEnumerable<TrackingUrl> CreateTrackingLinks(IEnumerable<string> plainLinks)
+        {
+            List<TrackingUrl> newTrackingUrls = new();
+
+            foreach (var plainLink in plainLinks)
+            {
+                newTrackingUrls.Add(
+                    _trackingUrlRepository.Add(
+                        new TrackingUrl {
+                            TargetUrl = plainLink,
+                            TrackingId = GenerateTrackingId(),
+                            IsActive = true,
+                            AccessCount = 0
+                        }
+                    )
+                );
+            }
+
+            return newTrackingUrls;
+        }
+
+        private string ReplaceAllTrackingLinks(string inputString, IEnumerable<TrackingUrl> trackingUrls)
+        {
+            StringBuilder mailContent = new(inputString);
+
+            foreach(var trackingUrl in trackingUrls)
+            {
+                mailContent.Replace(
+                    trackingUrl.TargetUrl,
+                    $"{ _configuration["ApplicationDomain"] }/api/tracking/redirection?t={ trackingUrl.TrackingId }"
+                );
+            }
+
+            return mailContent.ToString();
         }
     }
 }
