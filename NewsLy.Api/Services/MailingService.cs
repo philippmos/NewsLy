@@ -17,6 +17,7 @@ using NewsLy.Api.Models;
 using NewsLy.Api.Settings;
 using NewsLy.Api.Repositories.Interfaces;
 using NewsLy.Api.Services.Interfaces;
+using NewsLy.Api.Dtos.Mailing;
 
 namespace NewsLy.Api.Services
 {
@@ -70,6 +71,27 @@ namespace NewsLy.Api.Services
             email.Body = bodyBuilder.ToMessageBody();
 
             await SendMailAsync(email);
+        }
+
+        public IEnumerable<MailingListDto> GetAllMailingLists()
+        {
+            var allMailingLists = _mailingListRepository.GetAllActive();
+
+            List<MailingListDto> mailingListDtos = new();
+
+            foreach (var mailingList in allMailingLists)
+            {
+                var mailingListDto = new MailingListDto {
+                    Name = mailingList.Name,
+                    AmountOfRecipients = 
+                        _recipientRepository
+                        .GetAmountOfRecipientsForMailingList(mailingList.Id)
+                };
+
+                mailingListDtos.Add(mailingListDto);
+            }
+
+            return mailingListDtos;
         }
 
 

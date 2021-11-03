@@ -30,11 +30,18 @@ namespace NewsLy.Api.Repositories.Dapper
             return _dbconnection.Query<MailingList>(sqlQuery, new { @Id = id }).Single();
         }
 
-        public List<MailingList> GetAll()
+        public IEnumerable<MailingList> GetAll()
         {
             var sqlQuery = $"SELECT * FROM { _repoTableName }";
 
             return _dbconnection.Query<MailingList>(sqlQuery).ToList();
+        }
+
+        public IEnumerable<MailingList> GetAllActive()
+        {
+            var sqlQuery = $"SELECT * FROM { _repoTableName } WHERE IsActive = @IsActive";
+
+            return _dbconnection.Query<MailingList>(sqlQuery, new { @IsActive = true }).ToList();
         }
 
         public MailingList Add(MailingList mailingList)

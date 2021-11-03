@@ -12,6 +12,7 @@ namespace NewsLy.Api.Profiles
             CreateMap<TrackingUrl, TrackingUrlDto>();
             CreateMap<TrackingUrlCreateDto, TrackingUrl>();
             CreateMap<MailingCreateDto, ContactRequest>();
+            CreateMap<MailingList, MailingListDto>();
         }
     }
 }

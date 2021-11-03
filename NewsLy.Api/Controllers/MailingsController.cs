@@ -74,5 +74,11 @@ namespace NewsLy.Api.Controllers
         {
             return Ok($"TestValue: { _configuration["TestValue"] }");
         }
+
+        [HttpGet("lists")]
+        public IEnumerable<MailingListDto> GetAllMailingLists()
+        {
+            return _mailingService.GetAllMailingLists();
+        }
     }
 }
