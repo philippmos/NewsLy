@@ -5,6 +5,6 @@ namespace NewsLy.Api.Services.Interfaces
 {
     public interface IMailingService
     {
-        Task SendMailingAsync(ContactRequest mailRequest);
+        Task SendMailingAsync(ContactRequest mailRequest, bool trackLinks);
     }
 }

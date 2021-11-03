@@ -55,7 +55,7 @@ namespace NewsLy.Api.Controllers
             {
                 ContactRequest contactRequest = _mapper.Map<ContactRequest>(mailRequestDto);
 
-                await _mailingService.SendMailingAsync(contactRequest);
+                await _mailingService.SendMailingAsync(contactRequest, mailRequestDto.TrackLinks);
                 
                 _contactRequestRepository.Add(contactRequest);
 

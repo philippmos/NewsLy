@@ -46,7 +46,7 @@ namespace NewsLy.Api.Services
             _trackingService = trackingService;
         }
 
-        public async Task SendMailingAsync(ContactRequest mailRequest)
+        public async Task SendMailingAsync(ContactRequest mailRequest, bool trackLinks)
         {
             var mailSubject = "New Contact Request";
 
@@ -58,7 +58,7 @@ namespace NewsLy.Api.Services
             email.Subject = mailSubject;
 
             var bodyBuilder = new BodyBuilder();
-            bodyBuilder.HtmlBody = BuildEmailHtmlBody(mailRequest, mailSubject);
+            bodyBuilder.HtmlBody = BuildEmailHtmlBody(mailRequest, mailSubject, trackLinks);
 
             if(string.IsNullOrEmpty(bodyBuilder.HtmlBody))
             {
@@ -105,7 +105,7 @@ namespace NewsLy.Api.Services
             smtp.Disconnect(true);
         }
 
-        private string BuildEmailHtmlBody(ContactRequest mailRequest, string mailSubject)
+        private string BuildEmailHtmlBody(ContactRequest mailRequest, string mailSubject, bool trackLinks)
         {
             string mailTemplate = "";
 
@@ -140,7 +140,12 @@ namespace NewsLy.Api.Services
                     }
                 );
 
-                return _trackingService.DetectCreateAndReplaceTrackings(mailContent);
+                if (trackLinks)
+                {
+                    return _trackingService.DetectCreateAndReplaceTrackings(mailContent);
+                }
+
+                return mailContent;
             }
 
             return "";
