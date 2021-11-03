@@ -38,9 +38,9 @@ namespace NewsLy.Api.Controllers
         }
 
         [HttpGet]
-        public List<ContactRequest> Get()
+        public IEnumerable<MailRequestDto> Get()
         {
-            return _contactRequestRepository.GetAll();
+            return _mapper.Map<List<MailRequestDto>>(_contactRequestRepository.GetAll());
         }
 
         [HttpPost]
@@ -67,12 +67,6 @@ namespace NewsLy.Api.Controllers
             }
             
             return StatusCode(500);
-        }
-
-        [HttpGet("testvalue")]
-        public IActionResult TestValue()
-        {
-            return Ok($"TestValue: { _configuration["TestValue"] }");
         }
 
         [HttpGet("lists")]
