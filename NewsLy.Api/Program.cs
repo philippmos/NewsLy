@@ -28,7 +28,7 @@ namespace NewsLy.Api
                             $"appsettings.{ hostingContext.HostingEnvironment.EnvironmentName }.json",
                             optional: true,
                             reloadOnChange: true)
-                        .AddJsonFile("secrets/appsettings.Secrets.json", optional: true, reloadOnChange: true)
+                        .AddJsonFile("secrets/appsettings.secrets.json", optional: true, reloadOnChange: true)
                         .AddEnvironmentVariables();
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
