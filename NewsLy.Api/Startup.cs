@@ -1,4 +1,6 @@
+using System;
 using System.Text;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -7,6 +9,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity;
+using NewsLy.Api.Services.Interfaces;
+
 using NewsLy.Api.Repositories.Interfaces;
 using NewsLy.Api.Settings;
 using NewsLy.Api.Services;
@@ -14,10 +20,9 @@ using NewsLy.Api.Data;
 
 using DapperRepo = NewsLy.Api.Repositories.Dapper;
 using DapperContribRepo = NewsLy.Api.Repositories.DapperContrib;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Identity;
-using NewsLy.Api.Services.Interfaces;
-using System;
+using EntityFrameworkRepo = NewsLy.Api.Repositories.EntityFramework;
+using EntityFrameworkRawRepo = NewsLy.Api.Repositories.EntityFrameworkRaw;
+
 
 namespace NewsLy.Api
 {
@@ -108,7 +113,7 @@ namespace NewsLy.Api
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<ITrackingService, TrackingService>();
 
-            services.AddScoped<IContactRequestRepository, DapperContribRepo.ContactRequestRepository>();
+            services.AddScoped<IContactRequestRepository, EntityFrameworkRawRepo.ContactRequestRepository>();
             services.AddScoped<IRecipientRepository, DapperRepo.RecipientRepository>();
             services.AddScoped<IMailingListRepository, DapperRepo.MailingListRepository>();
             services.AddScoped<ITrackingUrlRepository, DapperRepo.TrackingUrlRepository>();
