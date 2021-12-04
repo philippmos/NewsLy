@@ -63,7 +63,8 @@ namespace NewsLy.Api
                     var key = Encoding.ASCII.GetBytes(Configuration["JwtSettings:Secret"]);
 
                     jwt.SaveToken = true;
-                    jwt.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters {
+                    jwt.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters 
+                    {
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = new SymmetricSecurityKey(key),
                         ValidateIssuer = false,

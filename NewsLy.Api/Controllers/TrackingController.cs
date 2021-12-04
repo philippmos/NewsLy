@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NewsLy.Api.Dtos.Tracking;
@@ -11,6 +13,7 @@ namespace NewsLy.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class TrackingController : ControllerBase
     {
         private readonly ILogger<TrackingController> _logger;
