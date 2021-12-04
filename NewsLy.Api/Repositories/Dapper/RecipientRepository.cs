@@ -37,6 +37,14 @@ namespace NewsLy.Api.Repositories.Dapper
             return _dbconnection.Query<Recipient>(sqlQuery, new { @MailingListId = mailingListId }).ToList();
         }
 
+        public int GetAmountOfRecipientsForMailingList(int mailingListId)
+        {
+            return _dbconnection.ExecuteScalar<int>(
+                $"SELECT COUNT(*) FROM { _repoTableName } WHERE MailingListId = @MailingListId",
+                new { @MailingListId = mailingListId }
+            );
+        }
+
         public Recipient Add(Recipient recipient, int mailingListId)
         {
             var sqlQuery = new StringBuilder();

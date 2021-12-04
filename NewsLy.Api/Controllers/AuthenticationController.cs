@@ -31,6 +31,7 @@ namespace NewsLy.Api.Controllers
         
         [HttpPost]
         [AllowAnonymous]
+        [Route("Register")]
         public async Task<IActionResult> Register([FromBody] UserRegistrationRequestDto userRegistrationRequestDto)
         {
             if (ModelState.IsValid)
@@ -89,6 +90,71 @@ namespace NewsLy.Api.Controllers
                     Success = false
                 }
             );
+        }
+
+
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("Login")]
+        public async Task<IActionResult> Login([FromBody] UserLoginRequestDto userLoginRequestDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(
+                    new UserLoginResponseDto 
+                    {
+                        Success = false,
+                        Errors = new List<string>() 
+                        {
+                            "Invalid authentication payload"
+                        }
+                    }
+                );
+            }
+
+            var existingUser = await _userManager.FindByEmailAsync(userLoginRequestDto.Email);
+
+            if (existingUser == null)
+            {
+                return BadRequest(
+                    new UserLoginResponseDto 
+                    {
+                        Success = false,
+                        Errors = new List<string>() 
+                        {
+                            "Invalid authentication request"
+                        }
+                    }
+                );
+            }
+        
+            var isLoginValid = await _userManager.CheckPasswordAsync(existingUser, userLoginRequestDto.Password);
+
+            if (isLoginValid) 
+            {
+                var jwtToken = _authenticationService.GenerateJwtToken(existingUser);
+
+                return Ok(
+                    new UserLoginResponseDto 
+                    {
+                        Success = true,
+                        Token = jwtToken
+                    }
+                );
+            }
+            else
+            {
+                return BadRequest(
+                    new UserLoginResponseDto 
+                    {
+                        Success = false,
+                        Errors = new List<string>() 
+                        {
+                            "Invalid authentication request"
+                        }
+                    }
+                );
+            }
         }
     }
 }

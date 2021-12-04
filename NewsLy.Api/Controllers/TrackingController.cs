@@ -40,8 +40,8 @@ namespace NewsLy.Api.Controllers
         }
 
 
-        [HttpGet("redirection")]
-        public void Redirection([FromQuery] string t)
+        [HttpGet("redirect")]
+        public void RedirectUrl([FromQuery] string t)
         {
             if(string.IsNullOrEmpty(t))
             {
@@ -64,7 +64,7 @@ namespace NewsLy.Api.Controllers
             return;
         }
 
-        [HttpPost("create")]
+        [HttpPost]
         public IActionResult Create([FromForm]TrackingUrlCreateDto trackingUrlCreateDto)
         {
             var trackingUrl = _mapper.Map<TrackingUrl>(trackingUrlCreateDto);

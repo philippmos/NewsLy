@@ -7,6 +7,7 @@ namespace NewsLy.Api.Repositories.Interfaces
     {
         Recipient Find(int id);
         List<Recipient> GetAllFromMailingList(int mailingListId);
+        int GetAmountOfRecipientsForMailingList(int mailingListId);
 
         Recipient Add(Recipient recipient, int mailingListId);
     }

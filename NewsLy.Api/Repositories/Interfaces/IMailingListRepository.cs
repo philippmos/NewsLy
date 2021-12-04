@@ -6,7 +6,8 @@ namespace NewsLy.Api.Repositories.Interfaces
     public interface IMailingListRepository
     {
         MailingList Find(int id);
-        List<MailingList> GetAll();
+        IEnumerable<MailingList> GetAll();
+        IEnumerable<MailingList> GetAllActive();
 
         MailingList Add(MailingList mailingList);
     }
