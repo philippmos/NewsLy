@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AutoMapper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+
+using AutoMapper;
+
 using NewsLy.Api.Dtos.Mailing;
 using NewsLy.Api.Models;
 using NewsLy.Api.Repositories.Interfaces;
@@ -14,10 +15,7 @@ using NewsLy.Api.Services.Interfaces;
 
 namespace NewsLy.Api.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class MailingsController : ControllerBase
+    public class MailingsController : ApiBaseController
     {
         private readonly ILogger<MailingsController> _logger;
         private readonly IMapper _mapper;

@@ -1,18 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+
 using NewsLy.Api.Dtos.User;
 using NewsLy.Api.Services.Interfaces;
 
 namespace NewsLy.Api.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class AuthenticationController : ControllerBase
+    public class AuthenticationController : ApiBaseController
     {
         private readonly ILogger<TrackingController> _logger;
         private readonly UserManager<IdentityUser> _userManager;
