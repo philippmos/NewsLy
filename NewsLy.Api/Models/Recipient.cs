@@ -1,3 +1,5 @@
+using System;
+
 namespace NewsLy.Api.Models
 {
     public class Recipient : BaseEntity
@@ -6,6 +8,9 @@ namespace NewsLy.Api.Models
         public string Lastname { get; set; }
         public string Email { get; set; }
         public Gender Gender { get; set; }
+
+        public DateTime ConfirmationMailSentDate { get; set; }
+        public DateTime UserConfirmationDate { get; set; }
     }
 
     public enum Gender 
