@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using NewsLy.Api.Models;
+using NewsLy.Api.Enums;
 
 namespace NewsLy.Api.Dtos.Recipient
 {

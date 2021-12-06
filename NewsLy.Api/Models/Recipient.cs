@@ -1,4 +1,5 @@
 using System;
+using NewsLy.Api.Enums;
 
 namespace NewsLy.Api.Models
 {
@@ -13,10 +14,5 @@ namespace NewsLy.Api.Models
         public DateTime UserConfirmationDate { get; set; }
     }
 
-    public enum Gender 
-    {
-        Male,
-        Female,
-        NotSpecified
-    }
+
 }
