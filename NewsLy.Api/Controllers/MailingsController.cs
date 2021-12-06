@@ -9,9 +9,10 @@ using Microsoft.Extensions.Logging;
 using AutoMapper;
 
 using NewsLy.Api.Dtos.Mailing;
-using NewsLy.Api.Models;
 using NewsLy.Api.Repositories.Interfaces;
 using NewsLy.Api.Services.Interfaces;
+using NewsLy.Api.Dtos.Recipient;
+using NewsLy.Api.Enums;
 
 namespace NewsLy.Api.Controllers
 {
@@ -21,44 +22,47 @@ namespace NewsLy.Api.Controllers
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
         private readonly IMailingService _mailingService;
-        private readonly IContactRequestRepository _contactRequestRepository;
+        private readonly IMailRequestRepository _mailRequestRepository;
 
         public MailingsController(
             ILogger<MailingsController> logger,
             IMapper mapper,
             IConfiguration configuration,
             IMailingService mailingService,
-            IContactRequestRepository contactRequestRepository
+            IMailRequestRepository mailRequestRepository
         )
         {
             _logger = logger;
             _mapper = mapper;
             _configuration = configuration;
             _mailingService = mailingService;
-            _contactRequestRepository = contactRequestRepository;
+            _mailRequestRepository = mailRequestRepository;
         }
 
         [HttpGet]
         public IEnumerable<MailRequestDto> Get()
         {
-            return _mapper.Map<List<MailRequestDto>>(_contactRequestRepository.GetAll());
+            return _mapper.Map<List<MailRequestDto>>(_mailRequestRepository.GetAll());
         }
 
         [HttpPost]
-        public async Task<IActionResult> SendMailAsync([FromForm] MailingCreateDto mailRequestDto)
+        public async Task<IActionResult> SendMailAsync([FromForm] MailingCreateDto mailCreateDto)
         {
-            if (string.IsNullOrEmpty(mailRequestDto.ToEmail) && !mailRequestDto.ToMailingListId.HasValue)
+            if (string.IsNullOrEmpty(mailCreateDto.ToEmail) && !mailCreateDto.ToMailingListId.HasValue)
             {
                 return BadRequest("ToEmail or ToMailingListId Parameter is required.");
             }
 
             try
             {
-                ContactRequest contactRequest = _mapper.Map<ContactRequest>(mailRequestDto);
+                var mailRequest = await _mailingService.SendMailingAsync(mailCreateDto, MailType.ContactRequest);
 
-                await _mailingService.SendMailingAsync(contactRequest, mailRequestDto);
+                if (mailRequest == null)
+                {
+                    return BadRequest();
+                }
                 
-                _contactRequestRepository.Add(contactRequest);
+                _mailRequestRepository.Add(mailRequest);
 
                 return Ok();
             }
@@ -74,6 +78,17 @@ namespace NewsLy.Api.Controllers
         public IEnumerable<MailingListDto> GetAllMailingLists()
         {
             return _mailingService.GetAllMailingLists();
+        }
+
+        [HttpPost("recipient")]
+        public IActionResult AddRecipientToMailingList([FromForm] RecipientCreateDto recipientCreateDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            return _mailingService.CreateRecipientForMailingList(recipientCreateDto) ? Ok() : BadRequest();
         }
     }
 }

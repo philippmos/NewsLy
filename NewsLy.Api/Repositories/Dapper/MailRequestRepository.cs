@@ -10,34 +10,34 @@ using NewsLy.Api.Repositories.Interfaces;
 
 namespace NewsLy.Api.Repositories.Dapper
 {
-    public class ContactRequestRepository : IContactRequestRepository
+    public class MailRequestRepository : IMailRequestRepository
     {
         private IDbConnection _dbconnection;
 
-        private readonly string _repoTableName = "ContactRequests";
+        private readonly string _repoTableName = "MailRequests";
 
-        public ContactRequestRepository(
+        public MailRequestRepository(
             IConfiguration configuration
         )
         {
             _dbconnection = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
         }
 
-        public ContactRequest Find(int id) 
+        public MailRequest Find(int id) 
         {
             var sqlQuery = $"SELECT TOP(1) FROM { _repoTableName } WHERE Id = @Id";
 
-            return _dbconnection.Query<ContactRequest>(sqlQuery, new { @Id = id }).Single();
+            return _dbconnection.Query<MailRequest>(sqlQuery, new { @Id = id }).FirstOrDefault();
         }
 
-        public List<ContactRequest> GetAll()
+        public List<MailRequest> GetAll()
         {
             var sqlQuery = $"SELECT * FROM { _repoTableName }";
 
-            return _dbconnection.Query<ContactRequest>(sqlQuery).ToList();
+            return _dbconnection.Query<MailRequest>(sqlQuery).ToList();
         }
 
-        public ContactRequest Add(ContactRequest contactRequest)
+        public MailRequest Add(MailRequest mailRequest)
         {
             var sqlQuery = new StringBuilder();
             sqlQuery.Append($"INSERT INTO { _repoTableName }");
@@ -45,9 +45,9 @@ namespace NewsLy.Api.Repositories.Dapper
             sqlQuery.Append(" VALUES (@Message, @ToEmail, @Name, @Subject);");
             sqlQuery.Append(" SELECT CAST(SCOPE_IDENTITY() as int);");
 
-            contactRequest.Id = _dbconnection.Query<int>(sqlQuery.ToString(), contactRequest).Single();
+            mailRequest.Id = _dbconnection.Query<int>(sqlQuery.ToString(), mailRequest).FirstOrDefault();
 
-            return contactRequest;
+            return mailRequest;
         }
     }
 }
