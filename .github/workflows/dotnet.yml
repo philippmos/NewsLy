@@ -21,10 +21,5 @@ jobs:
     - name: Build
       working-directory: ./NewsLy.Api
       run: dotnet build --no-restore
-
-  tests:
-    name: Unit Testing
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - run: dotnet test
+    - name: Unit Test
+      run: dotnet test
