@@ -27,7 +27,14 @@ namespace NewsLy.Api.Repositories.Dapper
         {
             var sqlQuery = $"SELECT * FROM { _repoTableName } WHERE Id = @Id";
 
-            return _dbconnection.Query<Recipient>(sqlQuery, new { @Id = id }).Single();
+            return _dbconnection.Query<Recipient>(sqlQuery, new { @Id = id }).FirstOrDefault();
+        }
+
+        public Recipient FindByEmailAndMailingList(string email, int mailingListId)
+        {
+            var sqlQuery = $"SELECT * FROM { _repoTableName } WHERE Email = @Email AND MailingListId = @MailingListId";
+
+            return _dbconnection.Query<Recipient>(sqlQuery, new { @Email = email, @MailingListId = mailingListId}).FirstOrDefault();
         }
 
         public List<Recipient> GetAllFromMailingList(int mailingListId)
@@ -63,7 +70,7 @@ namespace NewsLy.Api.Repositories.Dapper
                     @Gender = recipient.Gender,
                     @MailingListId = mailingListId
                 }
-            ).Single();
+            ).FirstOrDefault();
 
             return recipient;
         }

@@ -12,6 +12,7 @@ using NewsLy.Api.Dtos.Mailing;
 using NewsLy.Api.Models;
 using NewsLy.Api.Repositories.Interfaces;
 using NewsLy.Api.Services.Interfaces;
+using NewsLy.Api.Dtos.Recipient;
 
 namespace NewsLy.Api.Controllers
 {
@@ -74,6 +75,17 @@ namespace NewsLy.Api.Controllers
         public IEnumerable<MailingListDto> GetAllMailingLists()
         {
             return _mailingService.GetAllMailingLists();
+        }
+
+        [HttpPost("recipient")]
+        public IActionResult AddRecipientToMailingList([FromForm] RecipientCreateDto recipientCreateDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            return _mailingService.CreateRecipientForMailingList(recipientCreateDto) ? Ok() : BadRequest();
         }
     }
 }

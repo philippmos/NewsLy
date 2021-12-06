@@ -27,7 +27,7 @@ namespace NewsLy.Api.Repositories.Dapper
         {
             var sqlQuery = $"SELECT TOP(1) FROM { _repoTableName } WHERE Id = @Id";
 
-            return _dbconnection.Query<ContactRequest>(sqlQuery, new { @Id = id }).Single();
+            return _dbconnection.Query<ContactRequest>(sqlQuery, new { @Id = id }).FirstOrDefault();
         }
 
         public List<ContactRequest> GetAll()
@@ -45,7 +45,7 @@ namespace NewsLy.Api.Repositories.Dapper
             sqlQuery.Append(" VALUES (@Message, @ToEmail, @Name, @Subject);");
             sqlQuery.Append(" SELECT CAST(SCOPE_IDENTITY() as int);");
 
-            contactRequest.Id = _dbconnection.Query<int>(sqlQuery.ToString(), contactRequest).Single();
+            contactRequest.Id = _dbconnection.Query<int>(sqlQuery.ToString(), contactRequest).FirstOrDefault();
 
             return contactRequest;
         }

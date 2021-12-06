@@ -18,6 +18,7 @@ using NewsLy.Api.Settings;
 using NewsLy.Api.Repositories.Interfaces;
 using NewsLy.Api.Services.Interfaces;
 using NewsLy.Api.Dtos.Mailing;
+using NewsLy.Api.Dtos.Recipient;
 
 namespace NewsLy.Api.Services
 {
@@ -90,6 +91,35 @@ namespace NewsLy.Api.Services
             }
 
             return mailingListDtos;
+        }
+
+        public bool CreateRecipientForMailingList(RecipientCreateDto recipientCreateDto)
+        {
+            var mailingList = _mailingListRepository.Find(recipientCreateDto.MailingListId);
+
+            if (mailingList == null)
+            {
+                _logger.LogWarning($"MailingList with Id { recipientCreateDto.MailingListId } does not exist.");
+                return false;
+            }
+
+            if (_recipientRepository.FindByEmailAndMailingList(recipientCreateDto.Email, recipientCreateDto.MailingListId) != null)
+            {
+                _logger.LogWarning("Recipient with Email already exists");
+                return false;
+            }
+
+            var newRecipient = _recipientRepository.Add(
+                new Recipient
+                {
+                    Firstname = recipientCreateDto.Firstname,
+                    Lastname = recipientCreateDto.Lastname,
+                    Email = recipientCreateDto.Email
+                },
+                recipientCreateDto.MailingListId
+            );
+
+            return newRecipient != null;
         }
 
 

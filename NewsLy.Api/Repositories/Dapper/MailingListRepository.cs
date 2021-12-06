@@ -27,7 +27,7 @@ namespace NewsLy.Api.Repositories.Dapper
         {
             var sqlQuery = $"SELECT * FROM { _repoTableName } WHERE Id = @Id";
 
-            return _dbconnection.Query<MailingList>(sqlQuery, new { @Id = id }).Single();
+            return _dbconnection.Query<MailingList>(sqlQuery, new { @Id = id }).FirstOrDefault();
         }
 
         public IEnumerable<MailingList> GetAll()
@@ -52,7 +52,7 @@ namespace NewsLy.Api.Repositories.Dapper
             sqlQuery.Append(" VALUES (@Name, @IsActive);");
             sqlQuery.Append(" SELECT CAST(SCOPE_IDENTITY() as int);");
 
-            mailingList.Id = _dbconnection.Query<int>(sqlQuery.ToString(), mailingList).Single();
+            mailingList.Id = _dbconnection.Query<int>(sqlQuery.ToString(), mailingList).FirstOrDefault();
 
             return mailingList;
         }

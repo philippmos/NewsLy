@@ -27,7 +27,7 @@ namespace NewsLy.Api.Repositories.Dapper
         {
             var sqlQuery = $"SELECT * FROM { _repoTableName } WHERE TrackingId = @TrackingId";
 
-            return _dbconnection.Query<TrackingUrl>(sqlQuery, new { @TrackingId = trackingId }).Single();
+            return _dbconnection.Query<TrackingUrl>(sqlQuery, new { @TrackingId = trackingId }).FirstOrDefault();
         }
 
         public List<TrackingUrl> GetAll()
@@ -53,7 +53,7 @@ namespace NewsLy.Api.Repositories.Dapper
             sqlQuery.Append(" VALUES (@TrackingId, @TargetUrl, @AccessCount, @IsActive);");
             sqlQuery.Append(" SELECT CAST(SCOPE_IDENTITY() as int);");
 
-            trackingUrl.Id = _dbconnection.Query<int>(sqlQuery.ToString(), trackingUrl).Single();
+            trackingUrl.Id = _dbconnection.Query<int>(sqlQuery.ToString(), trackingUrl).FirstOrDefault();
 
             return trackingUrl;
         }
