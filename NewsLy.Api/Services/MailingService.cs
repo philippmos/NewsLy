@@ -47,19 +47,17 @@ namespace NewsLy.Api.Services
             _trackingService = trackingService;
         }
 
-        public async Task SendMailingAsync(ContactRequest mailRequest, bool trackLinks)
+        public async Task SendMailingAsync(ContactRequest mailRequest, MailingCreateDto mailingCreateDto)
         {
-            var mailSubject = "New Contact Request";
-
             var email = new MimeMessage();
             email.Importance = MessageImportance.Normal;
             email.From.Add(new MailboxAddress(_mailSettings.DisplayName, _mailSettings.SenderMail));
             email.Bcc.AddRange(GetMailingRecipients(mailRequest));
 
-            email.Subject = mailSubject;
+            email.Subject = mailRequest.Subject;
 
             var bodyBuilder = new BodyBuilder();
-            bodyBuilder.HtmlBody = BuildEmailHtmlBody(mailRequest, mailSubject, trackLinks);
+            bodyBuilder.HtmlBody = BuildEmailHtmlBody(mailRequest, mailingCreateDto);
 
             if(string.IsNullOrEmpty(bodyBuilder.HtmlBody))
             {
@@ -127,23 +125,30 @@ namespace NewsLy.Api.Services
             smtp.Disconnect(true);
         }
 
-        private string BuildEmailHtmlBody(ContactRequest mailRequest, string mailSubject, bool trackLinks)
+        private string BuildEmailHtmlBody(ContactRequest mailRequest, MailingCreateDto mailingCreateDto)
         {
             string mailTemplate = "";
 
-            try
+            if (!string.IsNullOrEmpty(mailingCreateDto.HtmlContent))
             {
-                var streamReader = new StreamReader(
-                    Path.Combine(Directory.GetCurrentDirectory(), "Templates", "MailTemplate.html")
-                );
-
-                mailTemplate = streamReader.ReadToEnd();
-
-                streamReader.Close();
+                mailTemplate = mailingCreateDto.HtmlContent;
             }
-            catch(Exception ex)
+            else
             {
-                _logger.LogError(ex.Message);
+                try
+                {
+                    var streamReader = new StreamReader(
+                        Path.Combine(Directory.GetCurrentDirectory(), "Templates", "MailTemplate.html")
+                    );
+
+                    mailTemplate = streamReader.ReadToEnd();
+
+                    streamReader.Close();
+                }
+                catch(Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                }
             }
 
             if (!string.IsNullOrEmpty(mailTemplate))
@@ -152,8 +157,8 @@ namespace NewsLy.Api.Services
                     mailTemplate,
                     new[]
                     {
-                        Tuple.Create("Title", mailSubject),
-                        Tuple.Create("Subject", mailSubject),
+                        Tuple.Create("Title", mailRequest.Subject),
+                        Tuple.Create("Subject", mailRequest.Subject),
                         Tuple.Create("Name", mailRequest.Name),
                         Tuple.Create("Email", mailRequest.ToEmail),
                         Tuple.Create("RequestIp", mailRequest.RequestIp),
@@ -162,7 +167,7 @@ namespace NewsLy.Api.Services
                     }
                 );
 
-                if (trackLinks)
+                if (mailingCreateDto.TrackLinks)
                 {
                     return _trackingService.DetectCreateAndReplaceTrackings(mailContent);
                 }

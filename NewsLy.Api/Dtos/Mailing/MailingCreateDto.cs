@@ -18,6 +18,8 @@ namespace NewsLy.Api.Dtos.Mailing
         [Required]
         public string Message { get; set; }
 
+        public string HtmlContent { get; set; }
+
         public List<IFormFile> Attachments { get; set; }
 
         public bool TrackLinks { get; set; }

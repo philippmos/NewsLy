@@ -1,7 +1,11 @@
 ﻿using System.Collections.Generic;
-using AutoMapper;
+
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+
+using AutoMapper;
+
 using NewsLy.Api.Dtos.Tracking;
 using NewsLy.Api.Models;
 using NewsLy.Api.Repositories.Interfaces;
@@ -9,9 +13,7 @@ using NewsLy.Api.Services.Interfaces;
 
 namespace NewsLy.Api.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class TrackingController : ControllerBase
+    public class TrackingController : ApiBaseController
     {
         private readonly ILogger<TrackingController> _logger;
         private readonly IMapper _mapper;
@@ -39,8 +41,8 @@ namespace NewsLy.Api.Controllers
             );
         }
 
-
-        [HttpGet("redirect")]
+        [HttpGet("rdr")]
+        [AllowAnonymous]
         public void RedirectUrl([FromQuery] string t)
         {
             if(string.IsNullOrEmpty(t))

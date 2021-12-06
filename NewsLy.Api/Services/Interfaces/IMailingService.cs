@@ -7,7 +7,7 @@ namespace NewsLy.Api.Services.Interfaces
 {
     public interface IMailingService
     {
-        Task SendMailingAsync(ContactRequest mailRequest, bool trackLinks);
+        Task SendMailingAsync(ContactRequest mailRequest, MailingCreateDto mailingCreateDto);
         IEnumerable<MailingListDto> GetAllMailingLists();
     }
 }
