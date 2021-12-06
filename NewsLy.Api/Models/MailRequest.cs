@@ -12,6 +12,7 @@ namespace NewsLy.Api.Models
         public string Name { get; set; }
         public string Subject { get; set; }
         public string RequestIp { get; set; }
+        public string Message { get; set; }
 
         [NotMapped]
         [Write(false)]

@@ -48,7 +48,7 @@ namespace NewsLy.Api.Services
             _trackingService = trackingService;
         }
 
-        public async Task SendMailingAsync(ContactRequest mailRequest, MailingCreateDto mailingCreateDto)
+        public async Task SendMailingAsync(MailRequest mailRequest, MailingCreateDto mailingCreateDto)
         {
             var email = new MimeMessage();
             email.Importance = MessageImportance.Normal;
@@ -58,7 +58,7 @@ namespace NewsLy.Api.Services
             email.Subject = mailRequest.Subject;
 
             var bodyBuilder = new BodyBuilder();
-            bodyBuilder.HtmlBody = BuildEmailHtmlBody(mailRequest, mailingCreateDto);
+            bodyBuilder.HtmlBody = await BuildEmailHtmlBody(mailRequest, mailingCreateDto);
 
             if(string.IsNullOrEmpty(bodyBuilder.HtmlBody))
             {
@@ -123,7 +123,7 @@ namespace NewsLy.Api.Services
         }
 
 
-        private IEnumerable<InternetAddress> GetMailingRecipients(ContactRequest mailRequest)
+        private IEnumerable<InternetAddress> GetMailingRecipients(MailRequest mailRequest)
         {
             var internetAddresses = new List<InternetAddress>();
 
@@ -155,31 +155,9 @@ namespace NewsLy.Api.Services
             smtp.Disconnect(true);
         }
 
-        private string BuildEmailHtmlBody(ContactRequest mailRequest, MailingCreateDto mailingCreateDto)
+        private async Task<string> BuildEmailHtmlBody(MailRequest mailRequest, MailingCreateDto mailingCreateDto)
         {
-            string mailTemplate = "";
-
-            if (!string.IsNullOrEmpty(mailingCreateDto.HtmlContent))
-            {
-                mailTemplate = mailingCreateDto.HtmlContent;
-            }
-            else
-            {
-                try
-                {
-                    var streamReader = new StreamReader(
-                        Path.Combine(Directory.GetCurrentDirectory(), "Templates", "MailTemplate.html")
-                    );
-
-                    mailTemplate = streamReader.ReadToEnd();
-
-                    streamReader.Close();
-                }
-                catch(Exception ex)
-                {
-                    _logger.LogError(ex.Message);
-                }
-            }
+            string mailTemplate = await GetMailTemplate("MailTemplate", mailingCreateDto.HtmlContent);
 
             if (!string.IsNullOrEmpty(mailTemplate))
             {
@@ -206,6 +184,34 @@ namespace NewsLy.Api.Services
             }
 
             return "";
+        }
+
+        private async Task<string> GetMailTemplate(string mailTemplateName, string customHtmlContent = "") 
+        {
+            var mailTemplate = "";
+
+            if (!string.IsNullOrEmpty(customHtmlContent))
+            {
+                return customHtmlContent;
+            }
+
+            try
+            {
+                var streamReader = new StreamReader(
+                    Path.Combine(Directory.GetCurrentDirectory(), "Templates", $"{ mailTemplateName }.html")
+                );
+
+                mailTemplate = await streamReader.ReadToEndAsync();
+
+                streamReader.Close();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+            }
+
+
+            return mailTemplate;
         }
 
         private static string ReplaceVariables(string mailTemplate, IEnumerable<Tuple<string, string>> mailReplaceParameters)

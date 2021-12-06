@@ -8,7 +8,7 @@ namespace NewsLy.Api.Services.Interfaces
 {
     public interface IMailingService
     {
-        Task SendMailingAsync(ContactRequest mailRequest, MailingCreateDto mailingCreateDto);
+        Task SendMailingAsync(MailRequest mailRequest, MailingCreateDto mailingCreateDto);
         IEnumerable<MailingListDto> GetAllMailingLists();
         bool CreateRecipientForMailingList(RecipientCreateDto recipientCreateDto);
     }

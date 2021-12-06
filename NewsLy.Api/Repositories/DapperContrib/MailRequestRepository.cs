@@ -9,30 +9,30 @@ using NewsLy.Api.Repositories.Interfaces;
 
 namespace NewsLy.Api.Repositories.DapperContrib
 {
-    public class ContactRequestRepository : IContactRequestRepository
+    public class MailRequestRepository : IMailRequestRepository
     {
         private IDbConnection _dbconnection;
 
-        public ContactRequestRepository(IConfiguration configuration)
+        public MailRequestRepository(IConfiguration configuration)
         {
             _dbconnection = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
         }
 
-        public ContactRequest Find(int id) 
+        public MailRequest Find(int id) 
         {
-            return _dbconnection.Get<ContactRequest>(id);
+            return _dbconnection.Get<MailRequest>(id);
         }
 
-        public List<ContactRequest> GetAll()
+        public List<MailRequest> GetAll()
         {
-            return _dbconnection.GetAll<ContactRequest>().ToList();
+            return _dbconnection.GetAll<MailRequest>().ToList();
         }
 
-        public ContactRequest Add(ContactRequest contactRequest)
+        public MailRequest Add(MailRequest mailRequest)
         {
-            contactRequest.Id = (int)_dbconnection.Insert(contactRequest);
+            mailRequest.Id = (int)_dbconnection.Insert(mailRequest);
 
-            return contactRequest;
+            return mailRequest;
         }
     }
 }

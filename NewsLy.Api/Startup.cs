@@ -114,7 +114,7 @@ namespace NewsLy.Api
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<ITrackingService, TrackingService>();
 
-            services.AddScoped<IContactRequestRepository, EntityFrameworkRawRepo.ContactRequestRepository>();
+            services.AddScoped<IMailRequestRepository, EntityFrameworkRawRepo.MailRequestRepository>();
             services.AddScoped<IRecipientRepository, DapperRepo.RecipientRepository>();
             services.AddScoped<IMailingListRepository, DapperRepo.MailingListRepository>();
             services.AddScoped<ITrackingUrlRepository, DapperRepo.TrackingUrlRepository>();

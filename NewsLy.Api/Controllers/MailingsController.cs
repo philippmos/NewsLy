@@ -22,27 +22,27 @@ namespace NewsLy.Api.Controllers
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
         private readonly IMailingService _mailingService;
-        private readonly IContactRequestRepository _contactRequestRepository;
+        private readonly IMailRequestRepository _mailRequestRepository;
 
         public MailingsController(
             ILogger<MailingsController> logger,
             IMapper mapper,
             IConfiguration configuration,
             IMailingService mailingService,
-            IContactRequestRepository contactRequestRepository
+            IMailRequestRepository mailRequestRepository
         )
         {
             _logger = logger;
             _mapper = mapper;
             _configuration = configuration;
             _mailingService = mailingService;
-            _contactRequestRepository = contactRequestRepository;
+            _mailRequestRepository = mailRequestRepository;
         }
 
         [HttpGet]
         public IEnumerable<MailRequestDto> Get()
         {
-            return _mapper.Map<List<MailRequestDto>>(_contactRequestRepository.GetAll());
+            return _mapper.Map<List<MailRequestDto>>(_mailRequestRepository.GetAll());
         }
 
         [HttpPost]
@@ -55,11 +55,11 @@ namespace NewsLy.Api.Controllers
 
             try
             {
-                ContactRequest contactRequest = _mapper.Map<ContactRequest>(mailRequestDto);
+                MailRequest mailRequest = _mapper.Map<MailRequest>(mailRequestDto);
 
-                await _mailingService.SendMailingAsync(contactRequest, mailRequestDto);
+                await _mailingService.SendMailingAsync(mailRequest, mailRequestDto);
                 
-                _contactRequestRepository.Add(contactRequest);
+                _mailRequestRepository.Add(mailRequest);
 
                 return Ok();
             }
