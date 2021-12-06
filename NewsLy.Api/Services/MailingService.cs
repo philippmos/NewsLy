@@ -164,7 +164,7 @@ namespace NewsLy.Api.Services
 
         private async Task<string> BuildEmailHtmlBody(MailingCreateDto mailingCreateDto, MailType mailType)
         {
-            var emailVariables = new[]
+            var emailVariables = new List<Tuple<string, string>>
             {
                 Tuple.Create("Title", mailingCreateDto.Subject),
                 Tuple.Create("Subject", mailingCreateDto.Subject),
@@ -179,10 +179,11 @@ namespace NewsLy.Api.Services
             {
                 case MailType.DoubleOptIn:
                     mailTemplateName = "DoubleOptInTemplate";
+                    emailVariables.Add(Tuple.Create("VerificationLink", $"{ _configuration["ApplicationDomain"] }/verify-email"));
                     break;
                 default:
                     mailTemplateName = "MailTemplate";
-                    emailVariables.Append(Tuple.Create("Message", mailingCreateDto.Message));
+                    emailVariables.Add(Tuple.Create("Message", mailingCreateDto.Message));
                     break;
             }
 

@@ -9,10 +9,10 @@ using Microsoft.Extensions.Logging;
 using AutoMapper;
 
 using NewsLy.Api.Dtos.Mailing;
-using NewsLy.Api.Models;
 using NewsLy.Api.Repositories.Interfaces;
 using NewsLy.Api.Services.Interfaces;
 using NewsLy.Api.Dtos.Recipient;
+using NewsLy.Api.Enums;
 
 namespace NewsLy.Api.Controllers
 {
@@ -55,7 +55,7 @@ namespace NewsLy.Api.Controllers
 
             try
             {
-                var mailRequest = await _mailingService.SendMailingAsync(mailCreateDto, Enums.MailType.ContactRequest);
+                var mailRequest = await _mailingService.SendMailingAsync(mailCreateDto, MailType.ContactRequest);
 
                 if (mailRequest == null)
                 {
