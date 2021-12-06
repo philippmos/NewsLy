@@ -99,7 +99,7 @@ namespace NewsLy.Api.Services
             {
                 mailContent.Replace(
                     trackingUrl.TargetUrl,
-                    $"{ _configuration["ApplicationDomain"] }/api/tracking/redirect?t={ trackingUrl.TrackingId }"
+                    $"{ _configuration["ApplicationDomain"] }/api/tracking/rdr?t={ trackingUrl.TrackingId }"
                 );
             }
 
