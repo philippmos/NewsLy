@@ -46,18 +46,21 @@ namespace NewsLy.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SendMailAsync([FromForm] MailingCreateDto mailRequestDto)
+        public async Task<IActionResult> SendMailAsync([FromForm] MailingCreateDto mailCreateDto)
         {
-            if (string.IsNullOrEmpty(mailRequestDto.ToEmail) && !mailRequestDto.ToMailingListId.HasValue)
+            if (string.IsNullOrEmpty(mailCreateDto.ToEmail) && !mailCreateDto.ToMailingListId.HasValue)
             {
                 return BadRequest("ToEmail or ToMailingListId Parameter is required.");
             }
 
             try
             {
-                MailRequest mailRequest = _mapper.Map<MailRequest>(mailRequestDto);
+                var mailRequest = await _mailingService.SendMailingAsync(mailCreateDto, Enums.MailType.ContactRequest);
 
-                await _mailingService.SendMailingAsync(mailRequest, mailRequestDto);
+                if (mailRequest == null)
+                {
+                    return BadRequest();
+                }
                 
                 _mailRequestRepository.Add(mailRequest);
 

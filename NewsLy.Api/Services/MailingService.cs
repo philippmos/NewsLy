@@ -19,6 +19,8 @@ using NewsLy.Api.Repositories.Interfaces;
 using NewsLy.Api.Services.Interfaces;
 using NewsLy.Api.Dtos.Mailing;
 using NewsLy.Api.Dtos.Recipient;
+using AutoMapper;
+using NewsLy.Api.Enums;
 
 namespace NewsLy.Api.Services
 {
@@ -30,6 +32,7 @@ namespace NewsLy.Api.Services
         private readonly IMailingListRepository _mailingListRepository;
         private readonly IRecipientRepository _recipientRepository;
         private readonly ITrackingService _trackingService;
+        private readonly IMapper _mapper;
 
         public MailingService(
             ILogger<MailingService> logger,
@@ -37,7 +40,8 @@ namespace NewsLy.Api.Services
             IConfiguration configuration,
             IMailingListRepository mailingListRepository,
             IRecipientRepository recipientRepository,
-            ITrackingService trackingService
+            ITrackingService trackingService,
+            IMapper mapper
         )
         {
             _logger = logger;
@@ -46,30 +50,33 @@ namespace NewsLy.Api.Services
             _mailingListRepository = mailingListRepository;
             _recipientRepository = recipientRepository;
             _trackingService = trackingService;
+            _mapper = mapper;
         }
 
-        public async Task SendMailingAsync(MailRequest mailRequest, MailingCreateDto mailingCreateDto)
+        public async Task<MailRequest> SendMailingAsync(MailingCreateDto mailingCreateDto, MailType mailType)
         {
             var email = new MimeMessage();
             email.Importance = MessageImportance.Normal;
             email.From.Add(new MailboxAddress(_mailSettings.DisplayName, _mailSettings.SenderMail));
-            email.Bcc.AddRange(GetMailingRecipients(mailRequest));
+            email.Bcc.AddRange(GetMailingRecipients(mailingCreateDto));
 
-            email.Subject = mailRequest.Subject;
+            email.Subject = mailingCreateDto.Subject;
 
             var bodyBuilder = new BodyBuilder();
-            bodyBuilder.HtmlBody = await BuildEmailHtmlBody(mailRequest, mailingCreateDto);
+            bodyBuilder.HtmlBody = await BuildEmailHtmlBody(mailingCreateDto, mailType);
 
             if(string.IsNullOrEmpty(bodyBuilder.HtmlBody))
             {
-                return;
+                return null;
             }
 
-            TryAddAttachments(mailRequest, bodyBuilder);
+            TryAddAttachments(mailingCreateDto, bodyBuilder);
 
             email.Body = bodyBuilder.ToMessageBody();
 
             await SendMailAsync(email);
+
+            return _mapper.Map<MailRequest>(mailingCreateDto);
         }
 
         public IEnumerable<MailingListDto> GetAllMailingLists()
@@ -123,20 +130,20 @@ namespace NewsLy.Api.Services
         }
 
 
-        private IEnumerable<InternetAddress> GetMailingRecipients(MailRequest mailRequest)
+        private IEnumerable<InternetAddress> GetMailingRecipients(MailingCreateDto mailingCreateDto)
         {
             var internetAddresses = new List<InternetAddress>();
 
-            if (!string.IsNullOrEmpty(mailRequest.ToEmail))
+            if (!string.IsNullOrEmpty(mailingCreateDto.ToEmail))
             {
-                internetAddresses.Add(MailboxAddress.Parse(mailRequest.ToEmail));
+                internetAddresses.Add(MailboxAddress.Parse(mailingCreateDto.ToEmail));
             }
 
-            if (mailRequest.ToMailingListId.HasValue &&
-                _mailingListRepository.Find((int) mailRequest.ToMailingListId) != null
+            if (mailingCreateDto.ToMailingListId.HasValue &&
+                _mailingListRepository.Find((int) mailingCreateDto.ToMailingListId) != null
             )
             {
-                var recipients = _recipientRepository.GetAllFromMailingList((int) mailRequest.ToMailingListId);
+                var recipients = _recipientRepository.GetAllFromMailingList((int) mailingCreateDto.ToMailingListId);
 
                 internetAddresses.AddRange(recipients.Select(x => MailboxAddress.Parse(x.Email)));
             }
@@ -155,24 +162,40 @@ namespace NewsLy.Api.Services
             smtp.Disconnect(true);
         }
 
-        private async Task<string> BuildEmailHtmlBody(MailRequest mailRequest, MailingCreateDto mailingCreateDto)
+        private async Task<string> BuildEmailHtmlBody(MailingCreateDto mailingCreateDto, MailType mailType)
         {
-            string mailTemplate = await GetMailTemplate("MailTemplate", mailingCreateDto.HtmlContent);
+            var emailVariables = new[]
+            {
+                Tuple.Create("Title", mailingCreateDto.Subject),
+                Tuple.Create("Subject", mailingCreateDto.Subject),
+                Tuple.Create("Name", mailingCreateDto.Name),
+                Tuple.Create("Email", mailingCreateDto.ToEmail),
+                Tuple.Create("ApplicationUrl", _configuration["ApplicationDomain"])
+            };
+
+            var mailTemplateName = "";
+
+            switch (mailType)
+            {
+                case MailType.DoubleOptIn:
+                    mailTemplateName = "DoubleOptInTemplate";
+                    break;
+                default:
+                    mailTemplateName = "MailTemplate";
+                    emailVariables.Append(Tuple.Create("Message", mailingCreateDto.Message));
+                    break;
+            }
+
+            string mailTemplate = await GetMailTemplate(
+                mailTemplateName,
+                mailingCreateDto.HtmlContent
+            );
 
             if (!string.IsNullOrEmpty(mailTemplate))
             {
                 string mailContent = ReplaceVariables(
                     mailTemplate,
-                    new[]
-                    {
-                        Tuple.Create("Title", mailRequest.Subject),
-                        Tuple.Create("Subject", mailRequest.Subject),
-                        Tuple.Create("Name", mailRequest.Name),
-                        Tuple.Create("Email", mailRequest.ToEmail),
-                        Tuple.Create("RequestIp", mailRequest.RequestIp),
-                        Tuple.Create("Message", mailRequest.Message),
-                        Tuple.Create("ApplicationUrl", _configuration["ApplicationDomain"])
-                    }
+                    emailVariables
                 );
 
                 if (mailingCreateDto.TrackLinks)
@@ -229,13 +252,13 @@ namespace NewsLy.Api.Services
             return mailContent.ToString();
         }
 
-        private static void TryAddAttachments(MailRequest mailRequest, BodyBuilder bodyBuilder)
+        private static void TryAddAttachments(MailingCreateDto mailingCreateDto, BodyBuilder bodyBuilder)
         {
-            if (mailRequest.Attachments != null)
+            if (mailingCreateDto.Attachments != null)
             {
                 byte[] fileBytes;
 
-                foreach (var file in mailRequest.Attachments)
+                foreach (var file in mailingCreateDto.Attachments)
                 {
                     if (file.Length > 0)
                     {

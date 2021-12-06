@@ -2,13 +2,14 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using NewsLy.Api.Dtos.Mailing;
 using NewsLy.Api.Dtos.Recipient;
+using NewsLy.Api.Enums;
 using NewsLy.Api.Models;
 
 namespace NewsLy.Api.Services.Interfaces
 {
     public interface IMailingService
     {
-        Task SendMailingAsync(MailRequest mailRequest, MailingCreateDto mailingCreateDto);
+        Task<MailRequest> SendMailingAsync(MailingCreateDto mailingCreateDto, MailType mailType);
         IEnumerable<MailingListDto> GetAllMailingLists();
         bool CreateRecipientForMailingList(RecipientCreateDto recipientCreateDto);
     }
