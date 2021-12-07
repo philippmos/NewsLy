@@ -142,11 +142,31 @@ namespace NewsLy.Api.Services
             );
 
             newRecipient.ConfirmationMailSentDate = DateTime.Now;
-            _recipientRepository.Update(newRecipient, recipientCreateDto.MailingListId);
+            _recipientRepository.Update(newRecipient);
 
             return newRecipient != null;
         }
 
+        public bool VerifyRecipientEmail(string verificationToken)
+        {
+            var recipient = _recipientRepository.FindByVerificationToken(verificationToken);
+
+            if (recipient == null)
+            {
+                return false;
+            }
+
+            recipient.ConfirmationDate = DateTime.Now;
+            recipient.IsVerified = true;
+            recipient.VerificationToken = "";
+
+            if (_recipientRepository.Update(recipient) != null)
+            {
+                return true;
+            }
+
+            return false;
+        }
 
         private IEnumerable<InternetAddress> GetMailingRecipients(MailingCreateDto mailingCreateDto)
         {

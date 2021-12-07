@@ -101,8 +101,7 @@ namespace NewsLy.Api.Controllers
                 return BadRequest();
             }
 
-
-            return Ok();
+            return _mailingService.VerifyRecipientEmail(token) ? Ok() : BadRequest();
         }
     }
 }

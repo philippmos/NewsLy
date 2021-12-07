@@ -37,6 +37,13 @@ namespace NewsLy.Api.Repositories.Dapper
             return _dbconnection.Query<Recipient>(sqlQuery, new { @Email = email, @MailingListId = mailingListId}).FirstOrDefault();
         }
 
+        public Recipient FindByVerificationToken(string token)
+        {
+            var sqlQuery = $"SELECT * FROM { _repoTableName } WHERE VerificationToken = @VerificationToken";
+
+            return _dbconnection.Query<Recipient>(sqlQuery, new { @VerificationToken = token }).FirstOrDefault();
+        }
+
         public List<Recipient> GetAllFromMailingList(int mailingListId)
         {
             var sqlQuery = $"SELECT * FROM { _repoTableName } WHERE MailingListId = @MailingListId";
@@ -77,13 +84,19 @@ namespace NewsLy.Api.Repositories.Dapper
             return recipient;
         }
 
-        public Recipient Update(Recipient recipient, int mailingListId)
+        public Recipient Update(Recipient recipient, int mailingListId = 0)
         {
             var sqlQuery = new StringBuilder();
             sqlQuery.Append($"UPDATE { _repoTableName }");
-            sqlQuery.Append(" SET Firstname = @Firstname, Lastname = @Lastname, Email = @Email, Gender = @Gender, MailingListId = @MailingListId,");
-            sqlQuery.Append(" ConfirmationMailSentDate = @ConfirmationMailSentDate, ConfirmationDate = @ConfirmationDate, IsVerified = @IsVerified,");
-            sqlQuery.Append(" VerificationToken = @VerificationToken");
+            sqlQuery.Append(" SET Firstname = @Firstname, Lastname = @Lastname, Email = @Email, Gender = @Gender,");
+            sqlQuery.Append(" ConfirmationMailSentDate = @ConfirmationMailSentDate, ConfirmationDate = @ConfirmationDate,");
+            sqlQuery.Append(" IsVerified = @IsVerified, VerificationToken = @VerificationToken");
+            
+            if (mailingListId > 0)
+            {
+                sqlQuery.Append(", MailingListId = @MailingListId");
+            }
+
             sqlQuery.Append(" WHERE Id = @Id");
 
             _dbconnection.Execute(
