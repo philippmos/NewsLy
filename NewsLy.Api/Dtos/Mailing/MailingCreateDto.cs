@@ -23,5 +23,6 @@ namespace NewsLy.Api.Dtos.Mailing
         public List<IFormFile> Attachments { get; set; }
 
         public bool TrackLinks { get; set; }
+        public string VerificationLink { get; set; }
     }
 }

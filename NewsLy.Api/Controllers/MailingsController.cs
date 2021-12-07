@@ -13,6 +13,7 @@ using NewsLy.Api.Repositories.Interfaces;
 using NewsLy.Api.Services.Interfaces;
 using NewsLy.Api.Dtos.Recipient;
 using NewsLy.Api.Enums;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NewsLy.Api.Controllers
 {
@@ -81,14 +82,28 @@ namespace NewsLy.Api.Controllers
         }
 
         [HttpPost("recipient")]
-        public IActionResult AddRecipientToMailingList([FromForm] RecipientCreateDto recipientCreateDto)
+        public async Task<IActionResult> AddRecipientToMailingList([FromForm] RecipientCreateDto recipientCreateDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
 
-            return _mailingService.CreateRecipientForMailingList(recipientCreateDto) ? Ok() : BadRequest();
+            return await _mailingService.CreateRecipientForMailingList(recipientCreateDto) ? Ok() : BadRequest();
+        }
+
+        [HttpGet("recipient-verification")]
+        [AllowAnonymous]
+        public IActionResult RecipientEmailVerification([FromQuery] string token)
+        {
+            if (string.IsNullOrEmpty(token))
+            {
+                return BadRequest();
+            }
+
+            return _mailingService.VerifyRecipientEmail(token) 
+                ? Ok("Newsletteranmeldung erfolgreich bestätigt!") 
+                : BadRequest("Newsletteranmeldung konnte nicht bestätigt werden.");
         }
     }
 }

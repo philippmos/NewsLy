@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NewsLy.Api.Data;
 
@@ -11,9 +12,10 @@ using NewsLy.Api.Data;
 namespace NewsLy.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211207085109_SetRecipientsConfirmationDatesToNullable")]
+    partial class SetRecipientsConfirmationDatesToNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -305,9 +307,6 @@ namespace NewsLy.Api.Migrations
 
                     b.Property<int?>("MailingListId")
                         .HasColumnType("int");
-
-                    b.Property<string>("VerificationToken")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

@@ -100,7 +100,7 @@ namespace NewsLy.Api.Services
             return mailingListDtos;
         }
 
-        public bool CreateRecipientForMailingList(RecipientCreateDto recipientCreateDto)
+        public async Task<bool> CreateRecipientForMailingList(RecipientCreateDto recipientCreateDto)
         {
             var mailingList = _mailingListRepository.Find(recipientCreateDto.MailingListId);
 
@@ -116,19 +116,57 @@ namespace NewsLy.Api.Services
                 return false;
             }
 
+            var tempRecipient = _mapper.Map<Recipient>(recipientCreateDto);
+            tempRecipient.VerificationToken = GenerateNewVerifikationToken();
+
             var newRecipient = _recipientRepository.Add(
-                new Recipient
-                {
-                    Firstname = recipientCreateDto.Firstname,
-                    Lastname = recipientCreateDto.Lastname,
-                    Email = recipientCreateDto.Email
-                },
+                tempRecipient,
                 recipientCreateDto.MailingListId
             );
+
+            if (newRecipient == null)
+            {
+                return false;
+            }
+
+            await SendMailingAsync(
+                new MailingCreateDto
+                {
+                    ToEmail = newRecipient.Email,
+                    ToMailingListId = null,
+                    Subject = "Newsletteranmeldung bestätigen",
+                    TrackLinks = false,
+                    VerificationLink = newRecipient.VerificationToken
+                },
+                MailType.DoubleOptIn
+            );
+
+            newRecipient.ConfirmationMailSentDate = DateTime.Now;
+            _recipientRepository.Update(newRecipient);
 
             return newRecipient != null;
         }
 
+        public bool VerifyRecipientEmail(string verificationToken)
+        {
+            var recipient = _recipientRepository.FindByVerificationToken(verificationToken);
+
+            if (recipient == null)
+            {
+                return false;
+            }
+
+            recipient.ConfirmationDate = DateTime.Now;
+            recipient.IsVerified = true;
+            recipient.VerificationToken = "";
+
+            if (_recipientRepository.Update(recipient) != null)
+            {
+                return true;
+            }
+
+            return false;
+        }
 
         private IEnumerable<InternetAddress> GetMailingRecipients(MailingCreateDto mailingCreateDto)
         {
@@ -179,7 +217,12 @@ namespace NewsLy.Api.Services
             {
                 case MailType.DoubleOptIn:
                     mailTemplateName = "DoubleOptInTemplate";
-                    emailVariables.Add(Tuple.Create("VerificationLink", $"{ _configuration["ApplicationDomain"] }/verify-email"));
+                    emailVariables.Add(
+                        Tuple.Create(
+                            "VerificationLink",
+                            $"{ _configuration["ApplicationDomain"] }/api/mailings/recipient-verification?token={ mailingCreateDto.VerificationLink }"
+                        )
+                    );
                     break;
                 default:
                     mailTemplateName = "MailTemplate";
@@ -273,6 +316,22 @@ namespace NewsLy.Api.Services
                     }
                 }
             }
+        }
+   
+        private string GenerateNewVerifikationToken()
+        {
+            var random = new Random();
+            const string characters = "abcdefghijklmnopqrstuvwxyz";
+            int.TryParse(
+                _configuration["EmailVerificationTokenLength"],
+                out var emailVerificationTokenLength
+            );
+
+            return new string(
+                Enumerable.Repeat(characters, emailVerificationTokenLength)
+                .Select(x => x[random.Next(x.Length)])
+                .ToArray()
+            );
         }
     }
 }

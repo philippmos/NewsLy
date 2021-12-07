@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NewsLy.Api.Data;
 
@@ -11,9 +12,10 @@ using NewsLy.Api.Data;
 namespace NewsLy.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211207084259_AddIsVerifiedFlagToRecipientsTable")]
+    partial class AddIsVerifiedFlagToRecipientsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -282,10 +284,7 @@ namespace NewsLy.Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<DateTime?>("ConfirmationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ConfirmationMailSentDate")
+                    b.Property<DateTime>("ConfirmationMailSentDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
@@ -306,8 +305,8 @@ namespace NewsLy.Api.Migrations
                     b.Property<int?>("MailingListId")
                         .HasColumnType("int");
 
-                    b.Property<string>("VerificationToken")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("UserConfirmationDate")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 

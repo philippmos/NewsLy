@@ -11,6 +11,7 @@ namespace NewsLy.Api.Services.Interfaces
     {
         Task<MailRequest> SendMailingAsync(MailingCreateDto mailingCreateDto, MailType mailType);
         IEnumerable<MailingListDto> GetAllMailingLists();
-        bool CreateRecipientForMailingList(RecipientCreateDto recipientCreateDto);
+        Task<bool> CreateRecipientForMailingList(RecipientCreateDto recipientCreateDto);
+        bool VerifyRecipientEmail(string verificationToken);
     }
 }
