@@ -20,7 +20,7 @@ namespace NewsLy.Api.Repositories.EntityFramework
             return _dbcontext.MailRequests.FirstOrDefault(x => x.Id == id);
         }
 
-        public List<MailRequest> GetAll()
+        public IEnumerable<MailRequest> GetAll()
         {
             return _dbcontext.MailRequests.ToList();
         }

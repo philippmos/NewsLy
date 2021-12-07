@@ -30,7 +30,7 @@ namespace NewsLy.Api.Repositories.Dapper
             return _dbconnection.Query<MailRequest>(sqlQuery, new { @Id = id }).FirstOrDefault();
         }
 
-        public List<MailRequest> GetAll()
+        public IEnumerable<MailRequest> GetAll()
         {
             var sqlQuery = $"SELECT * FROM { _repoTableName }";
 

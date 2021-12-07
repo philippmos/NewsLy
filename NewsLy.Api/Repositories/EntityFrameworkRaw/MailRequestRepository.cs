@@ -24,7 +24,7 @@ namespace NewsLy.Api.Repositories.EntityFrameworkRaw
                         .FirstOrDefault();
         }
 
-        public List<MailRequest> GetAll()
+        public IEnumerable<MailRequest> GetAll()
         {
             return _dbcontext
                         .MailRequests
