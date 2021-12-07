@@ -11,5 +11,6 @@ namespace NewsLy.Api.Repositories.Interfaces
         int GetAmountOfRecipientsForMailingList(int mailingListId);
 
         Recipient Add(Recipient recipient, int mailingListId);
+        Recipient Update(Recipient recipient, int mailingListId);
     }
 }

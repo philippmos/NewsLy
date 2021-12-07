@@ -13,5 +13,6 @@ namespace NewsLy.Api.Models
         public DateTime? ConfirmationMailSentDate { get; set; }
         public DateTime? ConfirmationDate { get; set; }
         public bool IsVerified { get; set; }
+        public string VerificationToken { get; set; }
     }
 }

@@ -100,7 +100,7 @@ namespace NewsLy.Api.Services
             return mailingListDtos;
         }
 
-        public bool CreateRecipientForMailingList(RecipientCreateDto recipientCreateDto)
+        public async Task<bool> CreateRecipientForMailingList(RecipientCreateDto recipientCreateDto)
         {
             var mailingList = _mailingListRepository.Find(recipientCreateDto.MailingListId);
 
@@ -120,6 +120,26 @@ namespace NewsLy.Api.Services
                 _mapper.Map<Recipient>(recipientCreateDto),
                 recipientCreateDto.MailingListId
             );
+
+            if (newRecipient == null)
+            {
+                return false;
+            }
+
+            await SendMailingAsync(
+                new MailingCreateDto
+                {
+                    ToEmail = newRecipient.Email,
+                    ToMailingListId = null,
+                    Subject = "Newsletteranmeldung bestätigen",
+                    TrackLinks = false,
+                    VerificationLink = "aeopjeirjefslöae8ajf"
+                },
+                MailType.DoubleOptIn
+            );
+
+            newRecipient.ConfirmationMailSentDate = DateTime.Now;
+            _recipientRepository.Update(newRecipient, recipientCreateDto.MailingListId);
 
             return newRecipient != null;
         }
@@ -174,7 +194,7 @@ namespace NewsLy.Api.Services
             {
                 case MailType.DoubleOptIn:
                     mailTemplateName = "DoubleOptInTemplate";
-                    emailVariables.Add(Tuple.Create("VerificationLink", $"{ _configuration["ApplicationDomain"] }/verify-email"));
+                    emailVariables.Add(Tuple.Create("VerificationLink", $"{ _configuration["ApplicationDomain"] }/verify-email?token=${ mailingCreateDto.VerificationLink }"));
                     break;
                 default:
                     mailTemplateName = "MailTemplate";

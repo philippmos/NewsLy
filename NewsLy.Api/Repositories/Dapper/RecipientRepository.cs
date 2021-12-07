@@ -75,5 +75,32 @@ namespace NewsLy.Api.Repositories.Dapper
 
             return recipient;
         }
+
+        public Recipient Update(Recipient recipient, int mailingListId)
+        {
+            var sqlQuery = new StringBuilder();
+            sqlQuery.Append($"UPDATE { _repoTableName }");
+            sqlQuery.Append(" SET Firstname = @Firstname, Lastname = @Lastname, Email = @Email, Gender = @Gender, MailingListId = @MailingListId,");
+            sqlQuery.Append(" ConfirmationMailSentDate = @ConfirmationMailSentDate, ConfirmationDate = @ConfirmationDate, IsVerified = @IsVerified");
+            sqlQuery.Append(" WHERE Id = @Id");
+
+            _dbconnection.Execute(
+                sqlQuery.ToString(),
+                new 
+                { 
+                    @Id = recipient.Id,
+                    @Firstname = recipient.Firstname,
+                    @Lastname = recipient.Lastname,
+                    @Email = recipient.Email,
+                    @Gender = recipient.Gender,
+                    @MailingListId = mailingListId,
+                    @ConfirmationMailSentDate = recipient.ConfirmationMailSentDate,
+                    @ConfirmationDate = recipient.ConfirmationDate,
+                    @IsVerified = recipient.IsVerified
+                }
+            );
+
+            return recipient;
+        }
     }
 }
