@@ -94,14 +94,14 @@ namespace NewsLy.Api.Controllers
 
         [HttpGet("recipient-verification")]
         [AllowAnonymous]
-        public IActionResult RecipientEmailVerification([FromQuery] string token)
+        public async Task<IActionResult> RecipientEmailVerification([FromQuery] string token)
         {
             if (string.IsNullOrEmpty(token))
             {
                 return BadRequest();
             }
 
-            return _mailingService.VerifyRecipientEmail(token) 
+            return await _mailingService.VerifyRecipientEmail(token) 
                 ? Ok("Newsletteranmeldung erfolgreich bestätigt!") 
                 : BadRequest("Newsletteranmeldung konnte nicht bestätigt werden.");
         }

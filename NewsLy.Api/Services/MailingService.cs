@@ -147,7 +147,7 @@ namespace NewsLy.Api.Services
             return newRecipient != null;
         }
 
-        public bool VerifyRecipientEmail(string verificationToken)
+        public async Task<bool> VerifyRecipientEmail(string verificationToken)
         {
             var recipient = _recipientRepository.FindByVerificationToken(verificationToken);
 
@@ -162,6 +162,16 @@ namespace NewsLy.Api.Services
 
             if (_recipientRepository.Update(recipient) != null)
             {
+                await SendMailingAsync(
+                    new MailingCreateDto {
+                        ToEmail = recipient.Email,
+                        Name = recipient.Firstname,
+                        Subject = "Willkommen",
+                        TrackLinks = false
+                    },
+                    MailType.Welcome
+                );
+
                 return true;
             }
 
@@ -208,13 +218,17 @@ namespace NewsLy.Api.Services
                 Tuple.Create("Subject", mailingCreateDto.Subject),
                 Tuple.Create("Name", mailingCreateDto.Name),
                 Tuple.Create("Email", mailingCreateDto.ToEmail),
-                Tuple.Create("ApplicationUrl", _configuration["ApplicationDomain"])
+                Tuple.Create("ApplicationUrl", _configuration["ApplicationDomain"]),
+                Tuple.Create("CurrentYear", DateTime.Now.ToString("yyyy"))
             };
 
-            var mailTemplateName = "";
+            var mailTemplateName = "MailTemplate";
 
             switch (mailType)
             {
+                case MailType.ContactRequest:
+                    emailVariables.Add(Tuple.Create("Message", mailingCreateDto.Message));
+                    break;
                 case MailType.DoubleOptIn:
                     mailTemplateName = "DoubleOptInTemplate";
                     emailVariables.Add(
@@ -224,9 +238,10 @@ namespace NewsLy.Api.Services
                         )
                     );
                     break;
+                case MailType.Welcome:
+                    mailTemplateName = "WelcomeTemplate";
+                    break;
                 default:
-                    mailTemplateName = "MailTemplate";
-                    emailVariables.Add(Tuple.Create("Message", mailingCreateDto.Message));
                     break;
             }
 
