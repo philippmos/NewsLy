@@ -56,17 +56,35 @@ namespace NewsLy.Api.Services
             _mapper = mapper;
         }
 
-        public async Task<MailRequest> SendMailingAsync(MailingCreateDto mailingCreateDto, MailType mailType)
+        public async Task<bool> SendMailingAsync(MailingCreateDto mailingCreateDto, MailType mailType)
+        {
+            var recipientList = GetMailingRecipients(mailingCreateDto);
+            var errorCount = 0;
+
+            foreach (var recipient in recipientList)
+            {
+                var mailRequest = await PrepareAndSendMailing(mailingCreateDto, mailType, recipient);
+                
+                if (mailRequest == null)
+                {
+                    errorCount++;
+                }
+            }
+
+            return errorCount == 0;
+        }
+
+        private async Task<MailRequest> PrepareAndSendMailing(MailingCreateDto mailingCreateDto, MailType mailType, Recipient recipient)
         {
             var email = new MimeMessage();
             email.Importance = MessageImportance.Normal;
             email.From.Add(new MailboxAddress(_mailSettings.DisplayName, _mailSettings.SenderMail));
-            email.Bcc.AddRange(GetMailingRecipients(mailingCreateDto));
+            email.To.Add(MailboxAddress.Parse(recipient.Email));
 
             email.Subject = mailingCreateDto.Subject;
 
             var bodyBuilder = new BodyBuilder();
-            bodyBuilder.HtmlBody = await BuildEmailHtmlBody(mailingCreateDto, mailType);
+            bodyBuilder.HtmlBody = await BuildEmailHtmlBody(mailingCreateDto, mailType, recipient);
 
             if(string.IsNullOrEmpty(bodyBuilder.HtmlBody))
             {
@@ -191,25 +209,28 @@ namespace NewsLy.Api.Services
         }
 
 
-        private IEnumerable<InternetAddress> GetMailingRecipients(MailingCreateDto mailingCreateDto)
+        private IEnumerable<Recipient> GetMailingRecipients(MailingCreateDto mailingCreateDto)
         {
-            var internetAddresses = new List<InternetAddress>();
+            var recipientList = new List<Recipient>();
 
             if (!string.IsNullOrEmpty(mailingCreateDto.ToEmail))
             {
-                internetAddresses.Add(MailboxAddress.Parse(mailingCreateDto.ToEmail));
+                recipientList.Add(
+                    new Recipient
+                    {
+                        Email = mailingCreateDto.ToEmail
+                    }
+                );
             }
 
             if (mailingCreateDto.ToMailingListId.HasValue &&
                 _mailingListRepository.Find((int) mailingCreateDto.ToMailingListId) != null
             )
             {
-                var recipients = _recipientRepository.GetAllFromMailingList((int) mailingCreateDto.ToMailingListId);
-
-                internetAddresses.AddRange(recipients.Select(x => MailboxAddress.Parse(x.Email)));
+                recipientList.AddRange(_recipientRepository.GetAllFromMailingList((int) mailingCreateDto.ToMailingListId));
             }
 
-            return internetAddresses;
+            return recipientList;
         }
 
         private async Task SendMailAsync(MimeMessage mimeMessage)
@@ -223,14 +244,14 @@ namespace NewsLy.Api.Services
             smtp.Disconnect(true);
         }
 
-        private async Task<string> BuildEmailHtmlBody(MailingCreateDto mailingCreateDto, MailType mailType)
+        private async Task<string> BuildEmailHtmlBody(MailingCreateDto mailingCreateDto, MailType mailType, Recipient recipient)
         {
             var emailVariables = new List<Tuple<string, string>>
             {
                 Tuple.Create("Title", mailingCreateDto.Subject),
                 Tuple.Create("Subject", mailingCreateDto.Subject),
-                Tuple.Create("Name", mailingCreateDto.Name),
-                Tuple.Create("Email", mailingCreateDto.ToEmail),
+                Tuple.Create("Name", recipient.Firstname),
+                Tuple.Create("Email", recipient.Email),
                 Tuple.Create("ApplicationUrl", _configuration["ApplicationDomain"]),
                 Tuple.Create("CurrentYear", DateTime.Now.ToString("yyyy"))
             };

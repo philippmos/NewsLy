@@ -52,9 +52,9 @@ namespace NewsLy.Api.Controllers
 
             try
             {
-                var mailRequest = await _mailingService.SendMailingAsync(mailCreateDto, MailType.ContactRequest);
+                var mailRequestSuccessful = await _mailingService.SendMailingAsync(mailCreateDto, MailType.ContactRequest);
 
-                if (mailRequest == null)
+                if (!mailRequestSuccessful)
                 {
                     return BadRequest();
                 }
