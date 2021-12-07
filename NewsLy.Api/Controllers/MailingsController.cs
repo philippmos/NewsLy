@@ -101,7 +101,9 @@ namespace NewsLy.Api.Controllers
                 return BadRequest();
             }
 
-            return _mailingService.VerifyRecipientEmail(token) ? Ok() : BadRequest();
+            return _mailingService.VerifyRecipientEmail(token) 
+                ? Ok("Newsletteranmeldung erfolgreich bestätigt!") 
+                : BadRequest("Newsletteranmeldung konnte nicht bestätigt werden.");
         }
     }
 }
