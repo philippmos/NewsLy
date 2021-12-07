@@ -8,7 +8,8 @@ namespace NewsLy.Api.Repositories.Interfaces
         Recipient Find(int id);
         Recipient FindByEmailAndMailingList(string email, int mailingListId);
         Recipient FindByVerificationToken(string token);
-        List<Recipient> GetAllFromMailingList(int mailingListId);
+        IEnumerable<Recipient> GetAllFromMailingList(int mailingListId);
+        IEnumerable<Recipient> GetAllVerifiedFromMailingList(int mailingListId);
         int GetAmountOfRecipientsForMailingList(int mailingListId);
 
         Recipient Add(Recipient recipient, int mailingListId);

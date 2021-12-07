@@ -45,11 +45,26 @@ namespace NewsLy.Api.Repositories.Dapper
             return _dbconnection.Query<Recipient>(sqlQuery, new { @VerificationToken = token }).FirstOrDefault();
         }
 
-        public List<Recipient> GetAllFromMailingList(int mailingListId)
+        public IEnumerable<Recipient> GetAllFromMailingList(int mailingListId)
         {
             var sqlQuery = $"SELECT * FROM { _repoTableName } WHERE MailingListId = @MailingListId";
 
             return _dbconnection.Query<Recipient>(sqlQuery, new { @MailingListId = mailingListId }).ToList();
+        }
+        
+        public IEnumerable<Recipient> GetAllVerifiedFromMailingList(int mailingListId)
+        {
+            var sqlQuery = $"SELECT * FROM { _repoTableName } WHERE MailingListId = @MailingListId AND IsVerified = @IsVerified";
+
+            return _dbconnection.Query<Recipient>
+                        (
+                            sqlQuery,
+                            new 
+                            {
+                                @MailingListId = mailingListId,
+                                @IsVerified = true
+                            }
+                        ).ToList();
         }
 
         public int GetAmountOfRecipientsForMailingList(int mailingListId)

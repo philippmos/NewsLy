@@ -227,7 +227,7 @@ namespace NewsLy.Api.Services
                 _mailingListRepository.Find((int) mailingCreateDto.ToMailingListId) != null
             )
             {
-                recipientList.AddRange(_recipientRepository.GetAllFromMailingList((int) mailingCreateDto.ToMailingListId));
+                recipientList.AddRange(_recipientRepository.GetAllVerifiedFromMailingList((int) mailingCreateDto.ToMailingListId));
             }
 
             return recipientList;
