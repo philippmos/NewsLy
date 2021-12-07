@@ -92,16 +92,16 @@ namespace NewsLy.Api.Controllers
             return await _mailingService.CreateRecipientForMailingList(recipientCreateDto) ? Ok() : BadRequest();
         }
 
-        [HttpGet("recipient/confirmation")]
+        [HttpGet("recipient-verification")]
         [AllowAnonymous]
-        public IActionResult RecipientConfirmation([FromQuery] string token)
+        public IActionResult RecipientEmailVerification([FromQuery] string token)
         {
             if (string.IsNullOrEmpty(token))
             {
                 return BadRequest();
             }
 
-            
+
             return Ok();
         }
     }

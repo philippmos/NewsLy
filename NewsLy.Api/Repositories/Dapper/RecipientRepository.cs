@@ -56,8 +56,8 @@ namespace NewsLy.Api.Repositories.Dapper
         {
             var sqlQuery = new StringBuilder();
             sqlQuery.Append($"INSERT INTO { _repoTableName }");
-            sqlQuery.Append(" (Firstname, Lastname, Email, Gender, MailingListId, IsVerified)");
-            sqlQuery.Append(" VALUES (@Firstname, @Lastname, @Email, @Gender, @MailingListId, @IsVerified);");
+            sqlQuery.Append(" (Firstname, Lastname, Email, Gender, MailingListId, IsVerified, VerificationToken)");
+            sqlQuery.Append(" VALUES (@Firstname, @Lastname, @Email, @Gender, @MailingListId, @IsVerified, @VerificationToken);");
             sqlQuery.Append(" SELECT CAST(SCOPE_IDENTITY() as int);");
 
             recipient.Id = _dbconnection.Query<int>(
@@ -69,7 +69,8 @@ namespace NewsLy.Api.Repositories.Dapper
                     @Email = recipient.Email,
                     @Gender = recipient.Gender,
                     @MailingListId = mailingListId,
-                    @IsVerified = false
+                    @IsVerified = recipient.IsVerified,
+                    @VerificationToken = recipient.VerificationToken
                 }
             ).FirstOrDefault();
 
@@ -81,7 +82,8 @@ namespace NewsLy.Api.Repositories.Dapper
             var sqlQuery = new StringBuilder();
             sqlQuery.Append($"UPDATE { _repoTableName }");
             sqlQuery.Append(" SET Firstname = @Firstname, Lastname = @Lastname, Email = @Email, Gender = @Gender, MailingListId = @MailingListId,");
-            sqlQuery.Append(" ConfirmationMailSentDate = @ConfirmationMailSentDate, ConfirmationDate = @ConfirmationDate, IsVerified = @IsVerified");
+            sqlQuery.Append(" ConfirmationMailSentDate = @ConfirmationMailSentDate, ConfirmationDate = @ConfirmationDate, IsVerified = @IsVerified,");
+            sqlQuery.Append(" VerificationToken = @VerificationToken");
             sqlQuery.Append(" WHERE Id = @Id");
 
             _dbconnection.Execute(
@@ -96,7 +98,8 @@ namespace NewsLy.Api.Repositories.Dapper
                     @MailingListId = mailingListId,
                     @ConfirmationMailSentDate = recipient.ConfirmationMailSentDate,
                     @ConfirmationDate = recipient.ConfirmationDate,
-                    @IsVerified = recipient.IsVerified
+                    @IsVerified = recipient.IsVerified,
+                    @VerificationToken = recipient.VerificationToken
                 }
             );
 

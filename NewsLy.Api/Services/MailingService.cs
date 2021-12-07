@@ -116,8 +116,11 @@ namespace NewsLy.Api.Services
                 return false;
             }
 
+            var tempRecipient = _mapper.Map<Recipient>(recipientCreateDto);
+            tempRecipient.VerificationToken = GenerateNewVerifikationToken();
+
             var newRecipient = _recipientRepository.Add(
-                _mapper.Map<Recipient>(recipientCreateDto),
+                tempRecipient,
                 recipientCreateDto.MailingListId
             );
 
@@ -133,7 +136,7 @@ namespace NewsLy.Api.Services
                     ToMailingListId = null,
                     Subject = "Newsletteranmeldung bestätigen",
                     TrackLinks = false,
-                    VerificationLink = "aeopjeirjefslöae8ajf"
+                    VerificationLink = newRecipient.VerificationToken
                 },
                 MailType.DoubleOptIn
             );
@@ -194,7 +197,12 @@ namespace NewsLy.Api.Services
             {
                 case MailType.DoubleOptIn:
                     mailTemplateName = "DoubleOptInTemplate";
-                    emailVariables.Add(Tuple.Create("VerificationLink", $"{ _configuration["ApplicationDomain"] }/verify-email?token=${ mailingCreateDto.VerificationLink }"));
+                    emailVariables.Add(
+                        Tuple.Create(
+                            "VerificationLink",
+                            $"{ _configuration["ApplicationDomain"] }/api/mailings/recipient-verification?token={ mailingCreateDto.VerificationLink }"
+                        )
+                    );
                     break;
                 default:
                     mailTemplateName = "MailTemplate";
@@ -288,6 +296,18 @@ namespace NewsLy.Api.Services
                     }
                 }
             }
+        }
+   
+        private string GenerateNewVerifikationToken()
+        {
+            var random = new Random();
+            const string characters = "abcdefghijklmnopqrstuvwxyz";
+
+            return new string(
+                Enumerable.Repeat(characters, 15)
+                .Select(x => x[random.Next(x.Length)])
+                .ToArray()
+            );
         }
     }
 }
