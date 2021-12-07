@@ -17,70 +17,48 @@ namespace NewsLy.Api.Controllers
     {
         private readonly ILogger<TrackingController> _logger;
         private readonly IMapper _mapper;
-        private readonly ITrackingUrlRepository _trackingUrlRepository;
         private readonly ITrackingService _trackingService;
 
         public TrackingController(
             ILogger<TrackingController> logger,
             IMapper mapper,
-            ITrackingUrlRepository trackingUrlRepository,
             ITrackingService trackingService
         )
         {
             _logger = logger;
             _mapper = mapper;
-            _trackingUrlRepository = trackingUrlRepository;
             _trackingService = trackingService;
         }
 
         [HttpGet]
-        public List<TrackingUrlDto> GetAll()
+        public IEnumerable<TrackingUrlDto> GetAll()
         {
-            return _mapper.Map<List<TrackingUrlDto>>(
-                _trackingUrlRepository.GetAllActive()
-            );
+            return _trackingService.GetAllActive();
         }
 
         [HttpGet("rdr")]
         [AllowAnonymous]
         public void RedirectUrl([FromQuery] string t)
         {
-            if(string.IsNullOrEmpty(t))
+            var targetUrl = _trackingService.GetTargetUrlAndIncreaseAccessCount(t);
+
+            if (!string.IsNullOrEmpty(targetUrl))
             {
-                return;
+                Response.Redirect(targetUrl);
             }
-
-            var trackingUrl = _trackingUrlRepository.FindByTrackingId(t);
-
-            if(trackingUrl == null)
-            {
-                return;
-            }
-
-            trackingUrl.AccessCount++;
-
-            _trackingUrlRepository.Update(trackingUrl);
-
-            Response.Redirect(trackingUrl.TargetUrl);
-
+            
             return;
         }
 
         [HttpPost]
         public IActionResult Create([FromForm]TrackingUrlCreateDto trackingUrlCreateDto)
         {
-            var trackingUrl = _mapper.Map<TrackingUrl>(trackingUrlCreateDto);
-            trackingUrl.TrackingId = _trackingService.GenerateTrackingId();
-            trackingUrl.IsActive = true;
-
-            var createdTrackingUrl = _trackingUrlRepository.Add(trackingUrl);
-
-            if (createdTrackingUrl.Id == 0)
+            if (_trackingService.CreateNewTrackingUrl(trackingUrlCreateDto) == null)
             {
                 return BadRequest();
             }
 
-            return Ok(createdTrackingUrl);
+            return Ok();
         }
     }
 }
