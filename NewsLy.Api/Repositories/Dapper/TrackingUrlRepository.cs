@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -49,8 +50,8 @@ namespace NewsLy.Api.Repositories.Dapper
         {
             var sqlQuery = new StringBuilder();
             sqlQuery.Append($"INSERT INTO { _repoTableName }");
-            sqlQuery.Append(" (TrackingId, TargetUrl, AccessCount, IsActive)");
-            sqlQuery.Append(" VALUES (@TrackingId, @TargetUrl, @AccessCount, @IsActive);");
+            sqlQuery.Append(" (TrackingId, TargetUrl, AccessCount, IsActive, CreationDate)");
+            sqlQuery.Append($" VALUES (@TrackingId, @TargetUrl, @AccessCount, @IsActive, { DateTime.Now });");
             sqlQuery.Append(" SELECT CAST(SCOPE_IDENTITY() as int);");
 
             trackingUrl.Id = _dbconnection.Query<int>(sqlQuery.ToString(), trackingUrl).FirstOrDefault();
@@ -62,7 +63,7 @@ namespace NewsLy.Api.Repositories.Dapper
         {
             var sqlQuery = new StringBuilder();
             sqlQuery.Append($"UPDATE { _repoTableName }");
-            sqlQuery.Append(" SET TrackingId = @TrackingId, TargetUrl = @TargetUrl, AccessCount = @AccessCount, IsActive = @IsActive");
+            sqlQuery.Append($" SET TrackingId = @TrackingId, TargetUrl = @TargetUrl, AccessCount = @AccessCount, IsActive = @IsActive, ModificationDate = { DateTime.Now }");
             sqlQuery.Append(" WHERE Id = @Id");
 
             _dbconnection.Execute(sqlQuery.ToString(), trackingUrl);

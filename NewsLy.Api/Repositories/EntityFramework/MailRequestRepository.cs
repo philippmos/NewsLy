@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NewsLy.Api.Data;
@@ -27,6 +28,7 @@ namespace NewsLy.Api.Repositories.EntityFramework
 
         public MailRequest Add(MailRequest mailRequest)
         {
+            mailRequest.CreationDate = DateTime.Now;
             _dbcontext.MailRequests.Add(mailRequest);
             _dbcontext.SaveChanges();
 

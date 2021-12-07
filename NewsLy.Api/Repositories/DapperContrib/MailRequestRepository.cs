@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -30,6 +31,7 @@ namespace NewsLy.Api.Repositories.DapperContrib
 
         public MailRequest Add(MailRequest mailRequest)
         {
+            mailRequest.CreationDate = DateTime.Now;
             mailRequest.Id = (int)_dbconnection.Insert(mailRequest);
 
             return mailRequest;

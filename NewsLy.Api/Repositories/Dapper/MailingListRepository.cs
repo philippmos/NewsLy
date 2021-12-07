@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -48,8 +49,8 @@ namespace NewsLy.Api.Repositories.Dapper
         {
             var sqlQuery = new StringBuilder();
             sqlQuery.Append($"INSERT INTO { _repoTableName }");
-            sqlQuery.Append(" (Name, IsActive)");
-            sqlQuery.Append(" VALUES (@Name, @IsActive);");
+            sqlQuery.Append(" (Name, IsActive, CreationDate)");
+            sqlQuery.Append($" VALUES (@Name, @IsActive, { DateTime.Now });");
             sqlQuery.Append(" SELECT CAST(SCOPE_IDENTITY() as int);");
 
             mailingList.Id = _dbconnection.Query<int>(sqlQuery.ToString(), mailingList).FirstOrDefault();

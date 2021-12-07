@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -63,8 +64,8 @@ namespace NewsLy.Api.Repositories.Dapper
         {
             var sqlQuery = new StringBuilder();
             sqlQuery.Append($"INSERT INTO { _repoTableName }");
-            sqlQuery.Append(" (Firstname, Lastname, Email, Gender, MailingListId, IsVerified, VerificationToken)");
-            sqlQuery.Append(" VALUES (@Firstname, @Lastname, @Email, @Gender, @MailingListId, @IsVerified, @VerificationToken);");
+            sqlQuery.Append(" (Firstname, Lastname, Email, Gender, MailingListId, IsVerified, VerificationToken, CreationDate)");
+            sqlQuery.Append(" VALUES (@Firstname, @Lastname, @Email, @Gender, @MailingListId, @IsVerified, @VerificationToken, @CreationDate);");
             sqlQuery.Append(" SELECT CAST(SCOPE_IDENTITY() as int);");
 
             recipient.Id = _dbconnection.Query<int>(
@@ -77,7 +78,8 @@ namespace NewsLy.Api.Repositories.Dapper
                     @Gender = recipient.Gender,
                     @MailingListId = mailingListId,
                     @IsVerified = recipient.IsVerified,
-                    @VerificationToken = recipient.VerificationToken
+                    @VerificationToken = recipient.VerificationToken,
+                    @CreationDate = DateTime.Now
                 }
             ).FirstOrDefault();
 
@@ -90,7 +92,7 @@ namespace NewsLy.Api.Repositories.Dapper
             sqlQuery.Append($"UPDATE { _repoTableName }");
             sqlQuery.Append(" SET Firstname = @Firstname, Lastname = @Lastname, Email = @Email, Gender = @Gender,");
             sqlQuery.Append(" ConfirmationMailSentDate = @ConfirmationMailSentDate, ConfirmationDate = @ConfirmationDate,");
-            sqlQuery.Append(" IsVerified = @IsVerified, VerificationToken = @VerificationToken");
+            sqlQuery.Append(" IsVerified = @IsVerified, VerificationToken = @VerificationToken, ModificationDate = @ModificationDate");
             
             if (mailingListId > 0)
             {
@@ -112,7 +114,8 @@ namespace NewsLy.Api.Repositories.Dapper
                     @ConfirmationMailSentDate = recipient.ConfirmationMailSentDate,
                     @ConfirmationDate = recipient.ConfirmationDate,
                     @IsVerified = recipient.IsVerified,
-                    @VerificationToken = recipient.VerificationToken
+                    @VerificationToken = recipient.VerificationToken,
+                    @ModificationDate = DateTime.Now
                 }
             );
 

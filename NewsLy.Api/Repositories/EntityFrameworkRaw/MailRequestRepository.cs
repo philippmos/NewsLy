@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
@@ -32,12 +33,13 @@ namespace NewsLy.Api.Repositories.EntityFrameworkRaw
                         .ToList();
         }
 
-        public MailRequest Add(MailRequest MailRequest)
+        public MailRequest Add(MailRequest mailRequest)
         {
-            _dbcontext.MailRequests.Add(MailRequest);
+            mailRequest.CreationDate = DateTime.Now;
+            _dbcontext.MailRequests.Add(mailRequest);
             _dbcontext.SaveChanges();
 
-            return MailRequest;
+            return mailRequest;
         }
     }
 }
