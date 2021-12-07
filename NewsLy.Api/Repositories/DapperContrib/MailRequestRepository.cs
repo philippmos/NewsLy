@@ -23,7 +23,7 @@ namespace NewsLy.Api.Repositories.DapperContrib
             return _dbconnection.Get<MailRequest>(id);
         }
 
-        public List<MailRequest> GetAll()
+        public IEnumerable<MailRequest> GetAll()
         {
             return _dbconnection.GetAll<MailRequest>().ToList();
         }

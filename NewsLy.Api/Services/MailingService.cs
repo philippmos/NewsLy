@@ -29,6 +29,7 @@ namespace NewsLy.Api.Services
         private readonly ILogger<MailingService> _logger;
         private readonly MailSettings _mailSettings;
         private readonly IConfiguration _configuration;
+        private readonly IMailRequestRepository _mailRequestRepository;
         private readonly IMailingListRepository _mailingListRepository;
         private readonly IRecipientRepository _recipientRepository;
         private readonly ITrackingService _trackingService;
@@ -38,6 +39,7 @@ namespace NewsLy.Api.Services
             ILogger<MailingService> logger,
             IOptions<MailSettings> mailSettings,
             IConfiguration configuration,
+            IMailRequestRepository mailRequestRepository,
             IMailingListRepository mailingListRepository,
             IRecipientRepository recipientRepository,
             ITrackingService trackingService,
@@ -47,6 +49,7 @@ namespace NewsLy.Api.Services
             _logger = logger;
             _mailSettings = mailSettings.Value;
             _configuration = configuration;
+            _mailRequestRepository = mailRequestRepository;
             _mailingListRepository = mailingListRepository;
             _recipientRepository = recipientRepository;
             _trackingService = trackingService;
@@ -76,7 +79,11 @@ namespace NewsLy.Api.Services
 
             await SendMailAsync(email);
 
-            return _mapper.Map<MailRequest>(mailingCreateDto);
+            var mailing = _mapper.Map<MailRequest>(mailingCreateDto);            
+
+            _mailRequestRepository.Add(mailing);
+
+            return mailing;
         }
 
         public IEnumerable<MailingListDto> GetAllMailingLists()
@@ -98,6 +105,11 @@ namespace NewsLy.Api.Services
             }
 
             return mailingListDtos;
+        }
+
+        public IEnumerable<MailRequestDto> GetAllMailRequests()
+        {
+            return _mapper.Map<List<MailRequestDto>>(_mailRequestRepository.GetAll());
         }
 
         public async Task<bool> CreateRecipientForMailingList(RecipientCreateDto recipientCreateDto)
@@ -177,6 +189,7 @@ namespace NewsLy.Api.Services
 
             return false;
         }
+
 
         private IEnumerable<InternetAddress> GetMailingRecipients(MailingCreateDto mailingCreateDto)
         {

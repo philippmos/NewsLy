@@ -23,27 +23,23 @@ namespace NewsLy.Api.Controllers
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
         private readonly IMailingService _mailingService;
-        private readonly IMailRequestRepository _mailRequestRepository;
 
         public MailingsController(
             ILogger<MailingsController> logger,
             IMapper mapper,
             IConfiguration configuration,
-            IMailingService mailingService,
-            IMailRequestRepository mailRequestRepository
-        )
+            IMailingService mailingService        )
         {
             _logger = logger;
             _mapper = mapper;
             _configuration = configuration;
             _mailingService = mailingService;
-            _mailRequestRepository = mailRequestRepository;
         }
 
         [HttpGet]
         public IEnumerable<MailRequestDto> Get()
         {
-            return _mapper.Map<List<MailRequestDto>>(_mailRequestRepository.GetAll());
+            return _mailingService.GetAllMailRequests();
         }
 
         [HttpPost]
@@ -63,8 +59,6 @@ namespace NewsLy.Api.Controllers
                     return BadRequest();
                 }
                 
-                _mailRequestRepository.Add(mailRequest);
-
                 return Ok();
             }
             catch (Exception ex)
