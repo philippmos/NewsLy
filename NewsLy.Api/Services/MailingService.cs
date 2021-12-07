@@ -322,9 +322,13 @@ namespace NewsLy.Api.Services
         {
             var random = new Random();
             const string characters = "abcdefghijklmnopqrstuvwxyz";
+            int.TryParse(
+                _configuration["EmailVerificationTokenLength"],
+                out var emailVerificationTokenLength
+            );
 
             return new string(
-                Enumerable.Repeat(characters, 15)
+                Enumerable.Repeat(characters, emailVerificationTokenLength)
                 .Select(x => x[random.Next(x.Length)])
                 .ToArray()
             );
