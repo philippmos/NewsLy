@@ -56,8 +56,8 @@ namespace NewsLy.Api.Repositories.Dapper
         {
             var sqlQuery = new StringBuilder();
             sqlQuery.Append($"INSERT INTO { _repoTableName }");
-            sqlQuery.Append(" (Firstname, Lastname, Email, Gender, MailingListId)");
-            sqlQuery.Append(" VALUES (@Firstname, @Lastname, @Email, @Gender, @MailingListId);");
+            sqlQuery.Append(" (Firstname, Lastname, Email, Gender, MailingListId, IsVerified)");
+            sqlQuery.Append(" VALUES (@Firstname, @Lastname, @Email, @Gender, @MailingListId, @IsVerified);");
             sqlQuery.Append(" SELECT CAST(SCOPE_IDENTITY() as int);");
 
             recipient.Id = _dbconnection.Query<int>(
@@ -68,7 +68,8 @@ namespace NewsLy.Api.Repositories.Dapper
                     @Lastname = recipient.Lastname,
                     @Email = recipient.Email,
                     @Gender = recipient.Gender,
-                    @MailingListId = mailingListId
+                    @MailingListId = mailingListId,
+                    @IsVerified = false
                 }
             ).FirstOrDefault();
 

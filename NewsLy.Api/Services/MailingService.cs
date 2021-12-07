@@ -117,12 +117,7 @@ namespace NewsLy.Api.Services
             }
 
             var newRecipient = _recipientRepository.Add(
-                new Recipient
-                {
-                    Firstname = recipientCreateDto.Firstname,
-                    Lastname = recipientCreateDto.Lastname,
-                    Email = recipientCreateDto.Email
-                },
+                _mapper.Map<Recipient>(recipientCreateDto),
                 recipientCreateDto.MailingListId
             );
 

@@ -10,8 +10,8 @@ namespace NewsLy.Api.Models
         public string Email { get; set; }
         public Gender Gender { get; set; }
 
-        public DateTime ConfirmationMailSentDate { get; set; }
-        public DateTime UserConfirmationDate { get; set; }
+        public DateTime? ConfirmationMailSentDate { get; set; }
+        public DateTime? ConfirmationDate { get; set; }
         public bool IsVerified { get; set; }
     }
 }
